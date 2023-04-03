@@ -96,8 +96,10 @@ class TaskStatusController extends Controller
         if (!Auth::user()) {
             return abort(403);
         }
-
         $status = TaskStatus::find($id);
+        if ($status->tasks->count() > 0) {
+            return abort(403, 'Невозможно удалить статус - к нему прикреплены задачи!');
+        }
         $status->delete();
         return redirect('/task_statuses');
     }

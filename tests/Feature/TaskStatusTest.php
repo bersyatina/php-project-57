@@ -20,7 +20,7 @@ class TaskStatusTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_store(): void
+    public function testStore(): void
     {
         $response = $this
             ->actingAs($this->user)
@@ -42,7 +42,7 @@ class TaskStatusTest extends TestCase
         $this->assertSame('новая', $status->name);
     }
 
-    public function test_update(): void
+    public function testUpdate(): void
     {
         $this->actingAs($this->user)
             ->post('/task_statuses', [
@@ -60,7 +60,7 @@ class TaskStatusTest extends TestCase
         $this->assertSame('новая3', $newStatus->name);
     }
 
-    public function test_edit(): void
+    public function testEdit(): void
     {
         $response = $this->actingAs($this->user)
             ->post('/task_statuses', [
@@ -77,7 +77,7 @@ class TaskStatusTest extends TestCase
         $this->assertSame('новая3', $newStatus->name);
     }
 
-    public function test_destroy(): void
+    public function testDestroy(): void
     {
         $response = $this->actingAs($this->user)
             ->post('/task_statuses', [
