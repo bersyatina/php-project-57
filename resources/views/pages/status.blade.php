@@ -13,7 +13,7 @@
                         <input class="rounded border-gray-300 w-1/3" name="name" type="text" id="name" value="{{ $status->name ?? '' }}">
                     </div>
                     <div class="mt-2">
-                        <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" value="{{ empty($status) ? 'Создать' : 'Изменить'  }}">
+                        <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" value="{{ empty($status) ? 'Создать' : 'Обновить'  }}">
                     </div>
                 </div>
             </form>

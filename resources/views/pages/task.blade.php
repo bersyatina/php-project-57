@@ -24,8 +24,8 @@
                     </div>
                     <div class="mt-2">
                         <textarea class="rounded border-gray-300 w-1/3"
-                               name="description"
-                               id="description"
+                                  name="description"
+                                  id="description"
                         >{{ $task->description ?? '' }}</textarea>
                     </div>
                     <div>
@@ -35,13 +35,14 @@
                         <select name="status_id" id="status_id">
                             <option value="">----------</option>
                             @if($statuses->count() > 0)
-                            @foreach($statuses as $index => $status)
-                                @if($status->id === $task->status_id)
-                                    <option value="{{ $status->id }}" selected="selected">{{ $status->name }}</option>
-                                @else
-                                    <option value="{{ $status->id }}">{{ $status->name }}</option>
-                                @endif
-                            @endforeach
+                                @foreach($statuses as $index => $status)
+                                    @if($status->id === $task->status_id)
+                                        <option value="{{ $status->id }}"
+                                                selected="selected">{{ $status->name }}</option>
+                                    @else
+                                        <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                    @endif
+                                @endforeach
                             @endif
                         </select>
                     </div>
@@ -52,19 +53,37 @@
                         <select name="assigned_to_id" id="assigned_to_id">
                             <option value="">----------</option>
                             @if($users->count() > 0)
-                            @foreach($users as $index => $user)
-                                @if($user->id === $task->assigned_to_id)
-                                    <option value="{{ $user->id }}" selected="selected">{{ $user->name }}</option>
-                                @else
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endif
-                            @endforeach
+                                @foreach($users as $index => $user)
+                                    @if($user->id === $task->assigned_to_id)
+                                        <option value="{{ $user->id }}" selected="selected">{{ $user->name }}</option>
+                                    @else
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endif
+                                @endforeach
                             @endif
                         </select>
                     </div>
                     <div class="mt-2">
+                        <label for="labels">Метки</label>
+                    </div>
+                    <div>
+                        <select multiple="multiple" name="labels[]" class="rounded border-gray-300 w-1/3 h-32"
+                                id="labels">
+                            <option value=""></option>
+                            @isset($labels[0])
+                                @foreach($labels as $index => $label)
+                                    @if(in_array($label->id, $taskLabels))
+                                        <option value="{{ $label->id }}" selected="selected">{{ $label->name }}</option>
+                                    @else
+                                        <option value="{{ $label->id }}">{{ $label->name }}</option>
+                                    @endif
+                                @endforeach
+                            @endisset
+                        </select>
+                    </div>
+                    <div class="mt-2">
                         <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                               type="submit" value="{{ empty($task->id) ? 'Создать' : 'Изменить'  }}">
+                               type="submit" value="{{ empty($task->id) ? 'Создать' : 'Обновить'  }}">
                     </div>
                 </div>
             </form>

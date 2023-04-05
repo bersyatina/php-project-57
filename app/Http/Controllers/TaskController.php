@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
+use App\Models\LabelTask;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
@@ -35,6 +37,7 @@ class TaskController extends Controller
             ? view('pages.task', [
                 'task' => new Task(),
                 'statuses' => TaskStatus::all(),
+                'labels' => Label::all(),
                 'users' => User::all(),
             ])
             : abort(403);
@@ -72,8 +75,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
+        $task = Task::find($id);
+        $taskLabels = $task->labels;
         return view('pages.task-show', [
-            'task' => Task::find($id),
+            'task' => $task,
+            'taskLabels' => $taskLabels,
         ]);
     }
 
@@ -85,9 +91,14 @@ class TaskController extends Controller
         if (!Auth::user()) {
             return abort(403);
         }
+        $task = Task::findOrFail($id);
+        $taskLabels = $task->labels;
+
         return view('pages.task', [
-            'task' => Task::findOrFail($id),
+            'task' => $task,
             'statuses' => TaskStatus::all(),
+            'labels' => Label::all(),
+            'taskLabels' => $taskLabels->pluck('id')->toArray(),
             'users' => User::all(),
         ]);
     }
@@ -106,6 +117,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'status_id' => 'required|exists:task_statuses,id',
             'assigned_to_id' => 'nullable|exists:users,id',
+            'labels' => 'nullable|array',
         ]);
 
         $task = Task::findOrFail($id);
@@ -116,6 +128,22 @@ class TaskController extends Controller
             'assigned_to_id' => $request->get('assigned_to_id'),
         ]);
 
+        $toManyLabelsTask = LabelTask::where('task_id', $task->id)->get()->pluck('label_id')->toArray();
+
+        if (!empty($labels = $request->get('labels'))) {
+            array_map(fn($label) => !in_array($label, $toManyLabelsTask)
+                ? LabelTask::insert([
+                    'label_id' => $label,
+                    'task_id' => $task->id,
+                ])
+                : true,
+            $labels);
+        }
+        array_map(fn($label) => !in_array($label, $labels)
+            ? $task->labels()->detach($label)
+            : true,
+            $toManyLabelsTask
+        );
         return redirect('/tasks');
     }
 

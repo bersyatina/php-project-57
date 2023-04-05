@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class LabelController extends Controller
@@ -13,6 +15,7 @@ class LabelController extends Controller
     public function index(Request $request): View
     {
         return view('pages.labels', [
+            'labels' => Label::all(),
             'user' => $request->user(),
         ]);
     }
@@ -22,7 +25,11 @@ class LabelController extends Controller
      */
     public function create()
     {
-        //
+        return Auth::user()
+            ? view('pages.label', [
+                'label' => new Label()
+            ])
+            : abort(403);
     }
 
     /**
@@ -30,15 +37,21 @@ class LabelController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        if (!Auth::user()) {
+            return abort(403);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string'
+        ]);
+
+        Label::create([
+            'name' => $request->get('name'),
+            'description' => $request->get('description')
+        ]);
+
+        return redirect('/labels');
     }
 
     /**
@@ -46,7 +59,12 @@ class LabelController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        if (!Auth::user()) {
+            return abort(403);
+        }
+        return view('pages.label', [
+            'label' => Label::findOrFail($id),
+        ]);
     }
 
     /**
@@ -54,7 +72,22 @@ class LabelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if (!Auth::user()) {
+            return abort(403);
+        }
+
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string'
+        ]);
+
+        $label = Label::findOrFail($id);
+        $label->update([
+            'name' => $request->get('name'),
+            'description' => $request->get('description')
+        ]);
+
+        return redirect('/labels');
     }
 
     /**
@@ -62,6 +95,14 @@ class LabelController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if (!Auth::user()) {
+            return abort(403);
+        }
+        $label = Label::find($id);
+        if ($label->tasks->count() > 0) {
+            return abort(403, 'Невозможно удалить метку!');
+        }
+        $label->delete();
+        return redirect('/labels');
     }
 }
