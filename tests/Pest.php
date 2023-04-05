@@ -13,9 +13,9 @@ use Tests\TestCase;
 | need to change it using the "uses()" function to bind a different classes or traits.
 |
 */
-
+// phpcs:disable
 uses(TestCase::class, RefreshDatabase::class)->in('Feature');
-
+// phpcs:enable
 /*
 |--------------------------------------------------------------------------
 | Expectations
@@ -26,11 +26,11 @@ uses(TestCase::class, RefreshDatabase::class)->in('Feature');
 | to assert different things. Of course, you may extend the Expectation API at any time.
 |
 */
-
+// phpcs:disable
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
-
+// phpcs:enable
 /*
 |--------------------------------------------------------------------------
 | Functions
