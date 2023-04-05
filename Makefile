@@ -2,13 +2,13 @@ start:
 	php artisan serve --host 0.0.0.0
 
 start-frontend:
-	npm run dev
+	npm run build
 
 setup:
 	composer install
 	cp -n .env.example .env
 	php artisan key:gen --ansi
-	touch database/database.sqlite
+	touch database/database.sql
 	php artisan migrate
 	php artisan db:seed
 	npm ci
