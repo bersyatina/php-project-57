@@ -50,7 +50,7 @@ class TaskStatusController extends Controller
         TaskStatus::create([
             'name' => $request->get('name')
         ]);
-
+        flash('Статус успешно создан')->success();
         return redirect('/task_statuses');
     }
 
@@ -84,7 +84,7 @@ class TaskStatusController extends Controller
         $status->update([
             'name' => $request->get('name')
         ]);
-
+        flash('Статус успешно изменён')->success();
         return redirect('/task_statuses');
     }
 
@@ -98,9 +98,11 @@ class TaskStatusController extends Controller
         }
         $status = TaskStatus::find($id);
         if ($status->tasks->count() > 0) {
-            return abort(403, 'Невозможно удалить статус - к нему прикреплены задачи!');
+            flash('Не удалось удалить статус')->error();
+            return redirect('/task_statuses');
         }
         $status->delete();
+        flash('Статус успешно удалён')->success();
         return redirect('/task_statuses');
     }
 }

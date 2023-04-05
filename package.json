@@ -1,24 +1,34 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "@tailwindcss/aspect-ratio": "^0.4.2",
-        "@tailwindcss/forms": "^0.5.2",
-        "@tailwindcss/line-clamp": "^0.4.4",
-        "@tailwindcss/typography": "^0.5.9",
-        "alpinejs": "^3.4.2",
-        "autoprefixer": "^10.4.14",
-        "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.7.2",
-        "postcss": "^8.4.21",
-        "tailwindcss": "^3.2.7",
-        "vite": "^4.0.0"
-    },
-    "dependencies": {
-        "tailwind-children": "^0.5.0",
-        "tailwindcss-children": "^2.1.0"
-    }
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@tailwindcss/typography": "^0.5.9",
+    "@types/node": "^18.15.11",
+    "alpinejs": "^3.4.2",
+    "autoprefixer": "^10.4.14",
+    "axios": "^1.1.2",
+    "laravel-vite-plugin": "^0.7.2",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7",
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "tailwind-children": "^0.5.0",
+    "tailwindcss-children": "^2.1.0"
+  },
+  "name": "project-4",
+  "description": "<p align=\"center\"> <a href=\"https://codeclimate.com/github/bersyatina/php-project-57/maintainability\"><img src=\"https://api.codeclimate.com/v1/badges/fc09af34abe5c3570024/maintainability\" /></a> <a href=\"https://codeclimate.com/github/bersyatina/php-project-57/test_coverage\"><img src=\"https://api.codeclimate.com/v1/badges/fc09af34abe5c3570024/test_coverage\" /></a> </p>",
+  "version": "1.0.0",
+  "main": "postcss.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "author": "Andrey Apanasenko",
+  "license": "MIT"
 }

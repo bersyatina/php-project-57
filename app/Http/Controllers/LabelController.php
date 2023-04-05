@@ -50,7 +50,7 @@ class LabelController extends Controller
             'name' => $request->get('name'),
             'description' => $request->get('description')
         ]);
-
+        flash('Метка успешно создана')->success();
         return redirect('/labels');
     }
 
@@ -86,7 +86,7 @@ class LabelController extends Controller
             'name' => $request->get('name'),
             'description' => $request->get('description')
         ]);
-
+        flash('Метка успешно изменена')->success();
         return redirect('/labels');
     }
 
@@ -100,9 +100,11 @@ class LabelController extends Controller
         }
         $label = Label::find($id);
         if ($label->tasks->count() > 0) {
-            return abort(403, 'Невозможно удалить метку!');
+            flash('Не удалось удалить метку')->error();
+            return redirect('/labels');
         }
         $label->delete();
+        flash('Метка успешно удалена')->success();
         return redirect('/labels');
     }
 }

@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "hexlet/code",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Task manager.",
+    "keywords": ["hexlet", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^8.1",
@@ -11,7 +11,8 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "rollbar/rollbar-laravel": "^8.0"
+        "rollbar/rollbar-laravel": "^8.0",
+        "spatie/laravel-query-builder": "^5.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

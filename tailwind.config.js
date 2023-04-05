@@ -9,6 +9,14 @@ module.exports = {
         './resources/**/*.js',
         './resources/**/*.vue',
     ],
+    theme: {
+        fontFamily: {
+            // 'sans': ['-apple-system', 'BlinkMacSystemFont'],
+            'serif': ['Georgia', 'Cambria'],
+            'mono': ['SFMono-Regular', 'Menlo'],
+            'nunito': ['Nunito', 'sans-serif']
+        }
+    },
 
     plugins: [
         require('@tailwindcss/typography'),

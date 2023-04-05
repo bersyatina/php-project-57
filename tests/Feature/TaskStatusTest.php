@@ -37,6 +37,7 @@ class TaskStatusTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'новая',
             ]);
+
         $response->assertRedirect('/task_statuses');
         $status = TaskStatus::orderByDesc('created_at')->first();
         $this->assertSame('новая', $status->name);
@@ -44,10 +45,10 @@ class TaskStatusTest extends TestCase
 
     public function testUpdate(): void
     {
-        $this->actingAs($this->user)
-            ->post('/task_statuses', [
-                'name' => 'новая2',
-            ]);
+        TaskStatus::factory()->create(['name' => 'новый']);
+        TaskStatus::factory()->create(['name' => 'работе']);
+        TaskStatus::factory()->create(['name' => 'на тестировании']);
+        TaskStatus::factory()->create(['name' => 'завершен']);
         $status = TaskStatus::all()->sortByDesc('id')->first();
         $newResponse = $this->actingAs($this->user)
             ->patch("/task_statuses/{$status->id}", [

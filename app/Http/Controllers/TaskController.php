@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TaskController extends Controller
 {
@@ -18,7 +20,13 @@ class TaskController extends Controller
      */
     public function index(Request $request): View
     {
-        $tasks = Task::paginate(15);
+        $tasks = QueryBuilder::for(Task::class)
+            ->allowedFilters([
+                AllowedFilter::exact('status_id'),
+                AllowedFilter::exact('assigned_to_id'),
+                AllowedFilter::exact('created_by_id'),
+            ])
+            ->paginate(15);
 
         return view('pages.tasks', [
             'users' => User::all(),
@@ -39,6 +47,7 @@ class TaskController extends Controller
                 'statuses' => TaskStatus::all(),
                 'labels' => Label::all(),
                 'users' => User::all(),
+                'taskLabels' => [],
             ])
             : abort(403);
     }
@@ -66,7 +75,7 @@ class TaskController extends Controller
             'assigned_to_id' => $request->get('assigned_to_id'),
             'created_by_id' => Auth::id(),
         ]);
-
+        flash('Задача успешно создана')->success();
         return redirect('/tasks');
     }
 
@@ -144,6 +153,7 @@ class TaskController extends Controller
             : true,
             $toManyLabelsTask
         );
+        flash('Задача успешно изменена')->success();
         return redirect('/tasks');
     }
 
@@ -155,9 +165,13 @@ class TaskController extends Controller
         if (!Auth::user()) {
             return abort(403);
         }
-
         $task = Task::find($id);
-        $task->delete();
+
+        if (Auth::id() === $task->created_by_id) {
+            $task->delete();
+            flash('Задача успешно удалена')->success();
+            return redirect('/tasks');
+        }
         return redirect('/tasks');
     }
 }
