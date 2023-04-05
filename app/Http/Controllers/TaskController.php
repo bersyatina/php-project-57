@@ -140,19 +140,11 @@ class TaskController extends Controller
         $toManyLabelsTask = LabelTask::where('task_id', $task->id)->get()->pluck('label_id')->toArray();
 
         if (!empty($labels = $request->get('labels'))) {
-            array_map(fn($label) => !in_array($label, $toManyLabelsTask)
-                ? LabelTask::insert([
+            array_map(fn($label) => !in_array($label, $toManyLabelsTask) ? LabelTask::insert([
                     'label_id' => $label,
-                    'task_id' => $task->id,
-                ])
-                : true,
-            $labels);
+                    'task_id' => $task->id]) : true, $labels);
         }
-        array_map(fn($label) => !in_array($label, $labels)
-            ? $task->labels()->detach($label)
-            : true,
-            $toManyLabelsTask
-        );
+        array_map(fn($label) => !in_array($label, $labels) ? $task->labels()->detach($label) : true, $toManyLabelsTask);
         flash('Задача успешно изменена')->success();
         return redirect('/tasks');
     }

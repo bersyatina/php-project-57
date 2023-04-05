@@ -114,7 +114,7 @@ class TaskTest extends TestCase
     {
         $status = TaskStatus::orderByDesc('id')->limit(1)->first();
         $response = $this->actingAs($this->user)
-            ->post('/task_statuses', [
+            ->post('/tasks', [
                 'name' => 'сделать выгрузку',
                 'description' => 'Выгрузка из Excel',
                 'status_id' => $status->id,
@@ -126,7 +126,8 @@ class TaskTest extends TestCase
         $newResponse = $this->actingAs($this->user)
             ->delete("/tasks/{$task->id}");
         $newResponse->assertRedirect('/tasks');
-        $this->assertNull(Task::find($task->id));
+        $newTask = Task::find($task->id);
+        $this->assertNull($newTask);
     }
 
     public function testShow(): void
