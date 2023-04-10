@@ -6,6 +6,7 @@ install:
 	composer install
 	cp -n .env.example .env || true
 	php artisan key:gen --ansi
+	php artisan key:generate
 	touch database/database.sqlite
 	php artisan migrate
 	php artisan db:seed
@@ -34,7 +35,7 @@ log:
 	tail -f storage/logs/laravel.log
 
 lint:
-	composer phpcs -- --standard=PSR12 app routes database/seeders
+	composer exec phpcs -- --standard=PSR12 app routes database/seeders
 
 lint-fix:
-	composer phpcbf -- --standard=PSR12 app routes tests
+	composer exec phpcbf -- --standard=PSR12 app routes tests
