@@ -2,7 +2,7 @@ PORT ?= 8000
 start:
 	php artisan serve --host 0.0.0.0:$(PORT)
 
-setup:
+install:
 	composer install
 	cp -n .env.example .env || true
 	php artisan key:gen --ansi
