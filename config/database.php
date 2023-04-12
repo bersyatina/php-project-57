@@ -65,12 +65,12 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('PGHOST'),
-            'port' => env('PGPORT'),
-            'database' => env('PGDATABASE', 'forge'),
-            'username' => env('PGUSER', 'forge'),
-            'password' => env('PGPASSWORD', ''),
+            'url' => 'postgresql://postgres:pXVkP69mZQuLWzGxp2BZ@containers-us-west-32.railway.app:7966/railway',
+            'host' => 'containers-us-west-32.railway.app',
+            'port' => '7966',
+            'database' => 'railway',
+            'username' => 'postgres',
+            'password' => 'pXVkP69mZQuLWzGxp2BZ',
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
