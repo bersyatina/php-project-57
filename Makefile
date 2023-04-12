@@ -39,3 +39,9 @@ lint:
 
 lint-fix:
 	composer exec phpcbf -- --standard=PSR12 app routes tests
+
+cache:
+	php artisan cache:clear
+	php artisan config:clear
+	php artisan route:clear
+	php artisan view:clear
