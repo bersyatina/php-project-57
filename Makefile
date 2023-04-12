@@ -1,17 +1,16 @@
 PORT ?= 8000
 start:
 	php artisan serve --host 0.0.0.0:$(PORT)
+	npm run build
 
 install:
 	composer install
 	cp -n .env.example .env || true
 	php artisan key:gen --ansi
-	php artisan key:generate
 	touch database/database.sqlite
 	php artisan migrate
 	php artisan db:seed
 	npm ci
-	npm run build
 
 update db:
 	rm database/database.sqlite
