@@ -20,7 +20,7 @@ class TaskController extends Controller
      */
     public function index(Request $request): View
     {
-        dd(env('DATABASE_URL'), env('DB_HOST'), env('DB_PORT'), env('DB_DATABASE'), env('DB_USERNAME'),env('DB_PASSWORD'));
+        dd($this);
         $tasks = QueryBuilder::for(Task::class)
             ->allowedFilters([
                 AllowedFilter::exact('status_id'),
