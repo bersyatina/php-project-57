@@ -66,8 +66,8 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            'host' => env('PGHOST', '127.0.0.1'),
-            'port' => env('PGPORT', '5432'),
+            'host' => env('PGHOST'),
+            'port' => env('PGPORT'),
             'database' => env('PGDATABASE', 'forge'),
             'username' => env('PGUSER', 'forge'),
             'password' => env('PGPASSWORD', ''),
