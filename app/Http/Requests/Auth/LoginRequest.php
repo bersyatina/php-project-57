@@ -32,6 +32,14 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'email.*' => 'Введите правильные имя пользователя и пароль',
+            'password.*' => 'Введите правильные имя пользователя и пароль',
+        ];
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *
