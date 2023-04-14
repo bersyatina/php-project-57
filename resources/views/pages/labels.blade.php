@@ -29,18 +29,15 @@
                     <td>{{ date('d.m.Y', strtotime($label->created_at)) }}</td>
                     @auth()
                         <td>
-                            <form action="{{ route('labels.destroy', $label->id) }}" method="post">
-                                @method('delete')
-                                @csrf
-                                <button type="submit"
-                                        onclick="return confirm('Вы уверены?')"
-                                        class="text-red-600 hover:text-red-900">
-                                    Удалить
-                                </button>
-                                <a class="text-blue-600 hover:text-blue-900"
-                                   href="{{ route('labels.edit', $label->id) }}">
-                                    Изменить </a>
-                            </form>
+                            <a class="text-red-600 hover:text-red-900"
+                               rel="nofollow" data-method="delete"
+                               data-confirm="Вы уверены?"
+                               href="{{ route('labels.destroy', $label->id) }}">
+                                Удалить
+                            </a>
+                            <a href="{{ route('labels.edit', $label->id) }}" class="text-blue-600 hover:text-blue-900">
+                                Изменить
+                            </a>
                         </td>
                     @endauth
                 </tr>

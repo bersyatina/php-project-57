@@ -19,6 +19,7 @@
     "vite": "^4.0.0"
   },
   "dependencies": {
+    "@rails/ujs": "^7.0.4-3",
     "tailwind-children": "^0.5.0",
     "tailwindcss-children": "^2.1.0"
   },

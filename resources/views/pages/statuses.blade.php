@@ -28,18 +28,16 @@
                     <td>{{ date('d.m.Y', strtotime($status->created_at)) }}</td>
                     @auth()
                         <td>
-                            <form action="{{ route('task_statuses.destroy', $status->id) }}" method="post">
-                                @method('delete')
-                                @csrf
-                                <button type="submit"
-                                        onclick="return confirm('Вы уверены?')"
-                                        class="text-red-600 hover:text-red-900">
-                                    Удалить
-                                </button>
-                                <a class="text-blue-600 hover:text-blue-900"
-                                   href="{{ route('task_statuses.edit', $status->id) }}">
-                                    Изменить </a>
-                            </form>
+                            <a class="text-red-600 hover:text-red-900"
+                               rel="nofollow" data-method="delete"
+                               data-confirm="Вы уверены?"
+                               href="{{ route('task_statuses.destroy', $status->id) }}">
+                                Удалить
+                            </a>
+                            <a class="text-blue-600 hover:text-blue-900"
+                               href="{{ route("task_statuses.edit", $status->id) }}">
+                                Изменить
+                            </a>
                         </td>
                     @endauth
                 </tr>
@@ -47,4 +45,5 @@
         @endif
         </tbody>
     </table>
+    <div class="mt-4 grid col-span-full">{{ $statuses->links() }}</div>
 </x-app-layout>

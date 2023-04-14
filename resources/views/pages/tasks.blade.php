@@ -77,15 +77,12 @@
                 @auth()
                     <td>
                         @if(Auth::id() === $task->created_by_id)
-                        <form action="{{ route('tasks.destroy', $task->id) }}" method="post">
-                            @method('delete')
-                            @csrf
-                            <button type="submit"
-                                    onclick="return confirm('Вы уверены?')"
-                                    class="text-red-600 hover:text-red-900">
-                                Удалить
-                            </button>
-                        </form>
+                        <a class="text-red-600 hover:text-red-900"
+                           rel="nofollow" data-method="delete"
+                           data-confirm="Вы уверены?"
+                           href="{{ route('tasks.destroy', $task->id) }}">
+                            Удалить
+                        </a>
                         @endif
                         <a href="{{ route('tasks.edit', $task->id) }}" class="text-blue-600 hover:text-blue-900">
                             Изменить
