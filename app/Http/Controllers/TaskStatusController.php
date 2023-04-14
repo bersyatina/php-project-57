@@ -44,7 +44,7 @@ class TaskStatusController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string'
+            'name' => ['required', 'string', 'unique:' . TaskStatus::class],
         ]);
 
         TaskStatus::create([
@@ -77,7 +77,7 @@ class TaskStatusController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string'
+            'name' => ['required', 'string', 'unique:' . TaskStatus::class],
         ]);
 
         $status = TaskStatus::findOrFail($id);
