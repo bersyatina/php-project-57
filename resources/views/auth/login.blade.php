@@ -12,6 +12,10 @@
                 class="rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 block mt-1 w-full"
                 id="email" type="email" name="email" required="required" autofocus="autofocus" wfd-id="id1">
 
+            @error('email')
+                <div class="text-rose-600">{{ $message }}</div>
+            @enderror
+
             <div class="mt-4">
                 <label class="block font-medium text-sm text-gray-700" for="password">
                     Пароль
@@ -22,6 +26,10 @@
                     id="password" type="password" name="password" required="required" autocomplete="current-password"
                     wfd-id="id2">
             </div>
+
+            @error('password')
+                <div class="text-rose-600">{{ $message }}</div>
+            @enderror
 
             <div class="block mt-4">
                 <label for="remember_me" class="inline-flex items-center">
