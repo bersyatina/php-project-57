@@ -39,9 +39,10 @@ class LabelTest extends TestCase
                 'description' => 'описание новой метки',
             ]);
         $response->assertRedirect('/labels');
-        $label = Label::orderByDesc('created_at')->first();
-        $this->assertSame('новая', $label->name);
-        $this->assertSame('описание новой метки', $label->description);
+        $label = Label::orderByDesc('created_at')->first()->toArray();
+
+        $this->assertSame('новая', $label['name']);
+        $this->assertSame('описание новой метки', $label['description']);
     }
 
     public function testUpdate(): void
@@ -51,18 +52,18 @@ class LabelTest extends TestCase
                 'name' => 'новая2',
                 'description' => 'Описание новаой метки 2',
             ]);
-        $label = Label::all()->sortByDesc('id')->first();
+        $label = Label::all()->sortByDesc('id')->first()->toArray();
         $newResponse = $this->actingAs($this->user)
-            ->patch("/labels/{$label->id}", [
+            ->patch("/labels/{$label['id']}", [
                 'name' => 'новая3',
                 'description' => 'Описание новаой метки 3',
             ]);
 
         $newResponse->assertRedirect('/labels');
-        $newLabel = Label::all()->sortByDesc('id')->first();
+        $newLabel = Label::all()->sortByDesc('id')->first()->toArray();
 
-        $this->assertSame('новая3', $newLabel->name);
-        $this->assertSame('Описание новаой метки 3', $newLabel->description);
+        $this->assertSame('новая3', $newLabel['name']);
+        $this->assertSame('Описание новаой метки 3', $newLabel['description']);
     }
 
     public function testEdit(): void
@@ -73,15 +74,15 @@ class LabelTest extends TestCase
                 'description' => 'Описание новаой метки 4',
             ]);
         $response->assertRedirect('/labels');
-        $label = Label::all()->sortByDesc('id')->first();
+        $label = Label::all()->sortByDesc('id')->first()->toArray();
 
         $newResponse = $this->actingAs($this->user)
-            ->get("/labels/{$label->id}/edit");
+            ->get("/labels/{$label['id']}/edit");
         $newResponse->assertOk();
 
-        $newLabel = Label::all()->sortByDesc('id')->first();
-        $this->assertSame('новая4', $newLabel->name);
-        $this->assertSame('Описание новаой метки 4', $newLabel->description);
+        $newLabel = Label::all()->sortByDesc('id')->first()->toArray();
+        $this->assertSame('новая4', $newLabel['name']);
+        $this->assertSame('Описание новаой метки 4', $newLabel['description']);
     }
 
     public function testDestroy(): void
@@ -91,11 +92,11 @@ class LabelTest extends TestCase
                 'name' => 'новая5',
                 'description' => 'Описание новаой метки 5',
             ]);
-        $label = Label::all()->sortByDesc('id')->first();
+        $label = Label::all()->sortByDesc('id')->first()->toArray();
 
         $newResponse = $this->actingAs($this->user)
-            ->delete("/labels/{$label->id}");
+            ->delete("/labels/{$label['id']}");
         $newResponse->assertRedirect('/labels');
-        $this->assertNull(Label::find($label->id));
+        $this->assertNull(Label::find($label['id']));
     }
 }

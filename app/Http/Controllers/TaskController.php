@@ -148,7 +148,7 @@ class TaskController extends Controller
 
         $labels = $request->get('labels');
 
-        if (count($labels) > 0) {
+        if (is_array($labels) && count($labels) > 0) {
             array_map(fn($label) => !in_array($label, $toManyLabelsTask, true) ? LabelTask::insert([
                 'label_id' => $label,
                 'task_id' => $task->id]) : true, $labels);
@@ -169,7 +169,8 @@ class TaskController extends Controller
             return abort(403);
         }
         $task = Task::find($id);
-        if (array_key_exists('created_by_id', $task) && Auth::id() === $task['created_by_id']) {
+        $arrayTask = $task->toArray();
+        if (array_key_exists('created_by_id', $arrayTask) && Auth::id() === $arrayTask['created_by_id']) {
             $task->delete();
             flash('Задача успешно удалена')->success();
             return redirect('/tasks');

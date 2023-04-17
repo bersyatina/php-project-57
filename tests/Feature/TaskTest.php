@@ -31,23 +31,23 @@ class TaskTest extends TestCase
         $this->actingAs($this->user)->post('/task_statuses', [
             'name' => 'новая17',
         ]);
-        $status = TaskStatus::orderByDesc('created_at')->first();
+        $status = TaskStatus::orderByDesc('created_at')->first()->toArray();
 
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'Первая задача',
                 'description' => 'Описание первой задачи',
-                'status_id' => $status->id,
+                'status_id' => $status['id'],
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
         $response->assertRedirect('/tasks');
-        $task = Task::orderByDesc('created_at')->first();
-        $this->assertSame('Первая задача', $task->name);
-        $this->assertSame('Описание первой задачи', $task->description);
-        $this->assertSame($status->id, $task->status_id);
-        $this->assertSame($this->user->id, $task->created_by_id);
-        $this->assertSame($this->user->id, $task->assigned_to_id);
+        $task = Task::orderByDesc('created_at')->first()->toArray();
+        $this->assertSame('Первая задача', $task['name']);
+        $this->assertSame('Описание первой задачи', $task['description']);
+        $this->assertSame($status['id'], $task['status_id']);
+        $this->assertSame($this->user->id, $task['created_by_id']);
+        $this->assertSame($this->user->id, $task['assigned_to_id']);
     }
 
     public function testUpdate(): void
@@ -56,81 +56,81 @@ class TaskTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'тестовая',
             ]);
-        $status = TaskStatus::all()->sortByDesc('id')->first();
+        $status = TaskStatus::all()->sortByDesc('id')->first()->toArray();
 
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'тестовая задача',
                 'description' => 'Описание обновленной задачи',
-                'status_id' => $status->id,
+                'status_id' => $status['id'],
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
         $response->assertRedirect('/tasks');
-        $task = Task::all()->sortByDesc('id')->first();
+        $task = Task::all()->sortByDesc('id')->first()->toArray();
 
         $this->actingAs($this->user)
             ->post('/task_statuses', [
                 'name' => 'новая2',
             ]);
-        $newStatus = TaskStatus::all()->sortByDesc('id')->first();
+        $newStatus = TaskStatus::all()->sortByDesc('id')->first()->toArray();
 
         $newResponse = $this->actingAs($this->user)
-            ->patch("/tasks/{$task->id}", [
+            ->patch("/tasks/{$task['id']}", [
                 'name' => 'Измененная',
                 'description' => 'Описание измененной задачи',
-                'status_id' => $newStatus->id,
+                'status_id' => $newStatus['id'],
             ]);
 
         $newResponse->assertRedirect('/tasks');
-        $newTask = Task::all()->sortByDesc('id')->first();
+        $newTask = Task::all()->sortByDesc('id')->first()->toArray();
 
-        $this->assertSame('Измененная', $newTask->name);
-        $this->assertSame('Описание измененной задачи', $newTask->description);
-        $this->assertSame($newStatus->id, $newTask->status_id);
+        $this->assertSame('Измененная', $newTask['name']);
+        $this->assertSame('Описание измененной задачи', $newTask['description']);
+        $this->assertSame($newStatus['id'], $newTask['status_id']);
     }
 
     public function testEdit(): void
     {
-        $status = TaskStatus::orderByDesc('id')->limit(1)->first();
+        $status = TaskStatus::orderByDesc('id')->limit(1)->first()->toArray();
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'сделать выгрузку',
                 'description' => 'Выгрузка из Excel',
-                'status_id' => $status->id,
+                'status_id' => $status['id'],
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
 
         $response->assertRedirect('/tasks');
-        $task = Task::all()->sortByDesc('id')->first();
+        $task = Task::all()->sortByDesc('id')->first()->toArray();
 
         $newResponse = $this->actingAs($this->user)
-            ->get("/tasks/{$task->id}/edit");
+            ->get("/tasks/{$task['id']}/edit");
         $newResponse->assertOk();
 
-        $newTask = Task::all()->sortByDesc('id')->first();
-        $this->assertSame('сделать выгрузку', $newTask->name);
+        $newTask = Task::all()->sortByDesc('id')->first()->toArray();
+        $this->assertSame('сделать выгрузку', $newTask['name']);
     }
 
     public function testDestroy(): void
     {
-        $status = TaskStatus::orderByDesc('id')->limit(1)->first();
+        $status = TaskStatus::orderByDesc('id')->limit(1)->first()->toArray();
 
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'Задача ' . time(),
                 'description' => 'Выгрузка из Excel',
-                'status_id' => $status->id,
+                'status_id' => $status['id'],
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
-        $task = Task::all()->sortByDesc('id')->first();
+        $task = Task::all()->sortByDesc('id')->first()->toArray();
 
         $newResponse = $this->actingAs($this->user)
-            ->delete("/tasks/{$task->id}");
+            ->delete("/tasks/{$task['id']}");
         $newResponse->assertRedirect('/tasks');
-        $newTask = Task::find($task->id);
+        $newTask = Task::find($task['id']);
         $this->assertNull($newTask);
     }
 
@@ -146,8 +146,8 @@ class TaskTest extends TestCase
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
-        $task = Task::all()->sortByDesc('id')->first();
-        $response = $this->actingAs($this->user)->get("/tasks/{$task->id}");
+        $task = Task::all()->sortByDesc('id')->first()->toArray();
+        $response = $this->actingAs($this->user)->get("/tasks/{$task['id']}");
         $this->assertTrue(str_contains($response->getContent(), 'Выгрузка из Excel, pdf'));
         $this->assertTrue(str_contains($response->getContent(), 'сделать выгрузку2'));
     }
