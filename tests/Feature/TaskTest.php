@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
+use Faker\Guesser\Name;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -115,9 +116,10 @@ class TaskTest extends TestCase
     public function testDestroy(): void
     {
         $status = TaskStatus::orderByDesc('id')->limit(1)->first();
+
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'сделать выгрузку1',
+                'name' => 'Задача ' . time(),
                 'description' => 'Выгрузка из Excel',
                 'status_id' => $status->id,
                 'created_by_id' => $this->user->id,
