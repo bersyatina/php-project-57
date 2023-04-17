@@ -1,7 +1,12 @@
 <?php
 
+namespace Tests\Feature\Auth;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 test('password can be updated', function () {
     $user = User::factory()->create();
