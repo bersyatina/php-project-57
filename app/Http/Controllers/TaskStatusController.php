@@ -78,9 +78,10 @@ class TaskStatusController extends Controller
             return abort(403);
         }
 
-        $request->validate([
-            'name' => ['required', 'string', 'unique:' . TaskStatus::class],
-        ]);
+        $request->validate(
+            ['name' => ['required', 'string', 'unique:' . TaskStatus::class]],
+            $messages = ['unique' => 'Статус с таким именем уже существует']
+        );
 
         $status = TaskStatus::findOrFail($id);
         $status->update([

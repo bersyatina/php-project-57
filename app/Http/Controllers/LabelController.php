@@ -41,10 +41,16 @@ class LabelController extends Controller
             return abort(403);
         }
 
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string'
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'unique:' . Label::class],
+                'description' => 'nullable|string'
+            ],
+            $messages = [
+                'name.unique' => 'Метка с таким именем уже существует',
+                'name.required' => 'Это обязательное поле'
+            ],
+        );
 
         Label::create([
             'name' => $request->get('name'),
@@ -76,10 +82,13 @@ class LabelController extends Controller
             return abort(403);
         }
 
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string'
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'unique:' . Label::class],
+                'description' => 'nullable|string'
+            ],
+            $messages = ['unique' => 'Метка с таким именем уже существует']
+        );
 
         $label = Label::findOrFail($id);
         $label->update([
