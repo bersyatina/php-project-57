@@ -41,7 +41,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return Auth::user()
+        return !empty(Auth::user()->id)
             ? view('pages.task', [
                 'task' => new Task(),
                 'statuses' => TaskStatus::all(),
@@ -57,7 +57,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
 
@@ -89,7 +89,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = Task::find($id);
-        $taskLabels = $task->labels;
+        $taskLabels = $task->labels()->get();
         return view('pages.task-show', [
             'task' => $task,
             'taskLabels' => $taskLabels,
@@ -101,7 +101,7 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
         $task = Task::findOrFail($id);
@@ -121,7 +121,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
 
@@ -144,14 +144,14 @@ class TaskController extends Controller
             'assigned_to_id' => $request->get('assigned_to_id'),
         ]);
 
-        $toManyLabelsTask = LabelTask::where('task_id', $task->id)->get()->pluck('label_id')->toArray();
-
-        if (!empty($labels = $request->get('labels'))) {
-            array_map(fn($label) => !in_array($label, $toManyLabelsTask) ? LabelTask::insert([
+        $toManyLabelsTask = LabelTask::select('label_id')->where('task_id', $task->id)->get()->toArray();
+        $labels = $request->get('labels');
+        if (count($labels) > 0) {
+            array_map(fn($label) => !in_array($label, $toManyLabelsTask, true) ? LabelTask::insert([
                 'label_id' => $label,
                 'task_id' => $task->id]) : true, $labels);
         }
-        array_map(fn($label) => !in_array($label, $labels) ? $task->labels()->detach($label) : true, $toManyLabelsTask);
+        array_map(fn($label) => !in_array($label, $labels, true) ? $task->labels()->detach($label) : true, $toManyLabelsTask);
         flash('Задача успешно изменена')->success();
         return redirect('/tasks');
     }
@@ -161,12 +161,12 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
         $task = Task::find($id);
 
-        if (Auth::id() === $task->created_by_id) {
+        if (Auth::id() === $task->get('created_by_id')) {
             $task->delete();
             flash('Задача успешно удалена')->success();
             return redirect('/tasks');

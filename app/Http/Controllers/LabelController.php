@@ -25,7 +25,7 @@ class LabelController extends Controller
      */
     public function create()
     {
-        return Auth::user()
+        return !empty(Auth::user()->id)
             ? view('pages.label', [
                 'label' => new Label()
             ])
@@ -37,7 +37,7 @@ class LabelController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
 
@@ -65,7 +65,7 @@ class LabelController extends Controller
      */
     public function edit(string $id)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
         return view('pages.label', [
@@ -104,11 +104,11 @@ class LabelController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!Auth::user()) {
+        if (empty(Auth::user()->id)) {
             return abort(403);
         }
         $label = Label::find($id);
-        if ($label->tasks->count() > 0) {
+        if ($label->tasks()->count() > 0) {
             flash('Не удалось удалить метку')->error();
             return redirect('/labels');
         }
