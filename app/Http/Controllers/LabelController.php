@@ -108,7 +108,7 @@ class LabelController extends Controller
             return abort(403);
         }
         $label = Label::find($id);
-        if ($label->tasks()->get()->count() > 0) {
+        if ($label->tasks()->count() > 0) {
             flash('Не удалось удалить метку')->error();
             return redirect('/labels');
         }
