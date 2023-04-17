@@ -99,7 +99,7 @@ class TaskStatusController extends Controller
         if (Auth::guest()) {
             return abort(403);
         }
-        $status = TaskStatus::find($id);
+        $status = TaskStatus::findOrFail($id);
         if ($status->tasks()->count() > 0) {
             flash('Не удалось удалить статус')->error();
             return redirect('/task_statuses');

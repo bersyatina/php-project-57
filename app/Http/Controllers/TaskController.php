@@ -89,7 +89,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = Task::find($id);
-        $taskLabels = $task->labels()->get();
+        $taskLabels = $task->labels()->get() ?? [];
         return view('pages.task-show', [
             'task' => $task,
             'taskLabels' => $taskLabels,
@@ -169,8 +169,7 @@ class TaskController extends Controller
             return abort(403);
         }
         $task = Task::find($id);
-        $arrayTask = $task->toArray();
-        if (array_key_exists('created_by_id', $arrayTask) && Auth::id() === $arrayTask['created_by_id']) {
+        if ($task !== null && Auth::id() === $task->created_by_id) {
             $task->delete();
             flash('Задача успешно удалена')->success();
             return redirect('/tasks');
