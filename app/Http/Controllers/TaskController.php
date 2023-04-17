@@ -57,7 +57,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        if (empty(Auth::user()->id)) {
+        if (!isset(Auth::user()->id)) {
             return abort(403);
         }
 
@@ -101,7 +101,7 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        if (empty(Auth::user()->id)) {
+        if (!isset(Auth::user()->id)) {
             return abort(403);
         }
         $task = Task::findOrFail($id);
@@ -121,7 +121,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (empty(Auth::user()->id)) {
+        if (!isset(Auth::user()->id)) {
             return abort(403);
         }
 
@@ -151,7 +151,9 @@ class TaskController extends Controller
                 'label_id' => $label,
                 'task_id' => $task->id]) : true, $labels);
         }
-        array_map(fn($label) => !in_array($label, $labels, true) ? $task->labels()->detach($label) : true, $toManyLabelsTask);
+        array_map(fn($label) => !in_array($label, $labels, true)
+            ? $task->labels()->detach($label)
+            : true, $toManyLabelsTask);
         flash('Задача успешно изменена')->success();
         return redirect('/tasks');
     }
@@ -161,7 +163,7 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        if (empty(Auth::user()->id)) {
+        if (!isset(Auth::user()->id)) {
             return abort(403);
         }
         $task = Task::find($id);
