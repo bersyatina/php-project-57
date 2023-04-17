@@ -40,22 +40,22 @@ class TaskStatusTest extends TestCase
             ]);
 
         $response->assertRedirect('/task_statuses');
-        $status = TaskStatus::orderByDesc('created_at')->first()->toArray();
-        $this->assertSame('новая', $status['name']);
+        $statusName = TaskStatus::orderByDesc('created_at')->first() ?? '';
+        $this->assertSame('новая', $statusName);
     }
 
     public function testUpdate(): void
     {
-        $status = TaskStatus::all()->sortByDesc('id')->first()->toArray();
+        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
         $newResponse = $this->actingAs($this->user)
-            ->patch("/task_statuses/{$status['id']}", [
+            ->patch("/task_statuses/{$statusId}", [
                 'name' => 'новая3',
             ]);
 
         $newResponse->assertRedirect('/task_statuses');
-        $newStatus = TaskStatus::all()->sortByDesc('id')->first()->toArray();
+        $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
 
-        $this->assertSame('новая3', $newStatus['name']);
+        $this->assertSame('новая3', $newStatusName);
     }
 
     public function testEdit(): void
@@ -64,15 +64,15 @@ class TaskStatusTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'новая4',
             ]);
-        $status = TaskStatus::all()->sortByDesc('id')->first()->toArray();
+        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
         $response->assertRedirect("/task_statuses");
 
         $newResponse = $this->actingAs($this->user)
-            ->get("/task_statuses/{$status['id']}/edit");
+            ->get("/task_statuses/{$statusId}/edit");
         $newResponse->assertOk();
 
-        $newStatus = TaskStatus::all()->sortByDesc('id')->first()->toArray();
-        $this->assertSame('новая4', $newStatus['name']);
+        $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
+        $this->assertSame('новая4', $newStatusName);
     }
 
     public function testDestroy(): void
@@ -81,11 +81,11 @@ class TaskStatusTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'новая3',
             ]);
-        $status = TaskStatus::all()->sortByDesc('id')->first()->toArray();
+        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
 
         $newResponse = $this->actingAs($this->user)
-            ->delete("/task_statuses/{$status['id']}");
+            ->delete("/task_statuses/{$statusId}");
         $newResponse->assertRedirect('/task_statuses');
-        $this->assertNull(TaskStatus::find($status['id']));
+        $this->assertNull(TaskStatus::find($statusId));
     }
 }

@@ -153,7 +153,8 @@ class TaskTest extends TestCase
             ]);
         $taskId = Task::all()->sortByDesc('id')->first()->id ?? null;
         $response = $this->actingAs($this->user)->get("/tasks/{$taskId}");
-        $this->assertTrue(str_contains($response->getContent() ?? '', 'Выгрузка из Excel, pdf'));
-        $this->assertTrue(str_contains($response->getContent() ?? '', 'сделать выгрузку2'));
+        $content = $response->getContent();
+        $this->assertTrue(str_contains($content !== false ? $content : '', 'Выгрузка из Excel, pdf'));
+        $this->assertTrue(str_contains($content !== false ? $content : '', 'сделать выгрузку2'));
     }
 }
