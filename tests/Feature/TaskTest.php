@@ -32,23 +32,27 @@ class TaskTest extends TestCase
             'name' => 'новая17',
         ]);
         $status = TaskStatus::orderByDesc('created_at')->first();
-        $status = $status->toArray() ?? [];
+        $id = $status->id ?? null;
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'Первая задача',
                 'description' => 'Описание первой задачи',
-                'status_id' => $status['id'],
+                'status_id' => $id,
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
         $response->assertRedirect('/tasks');
         $task = Task::orderByDesc('created_at')->first();
-        $task = $task->toArray() ?? [];
-        $this->assertSame('Первая задача', $task['name']);
-        $this->assertSame('Описание первой задачи', $task['description']);
-        $this->assertSame($status['id'], $task['status_id']);
-        $this->assertSame($this->user->id, $task['created_by_id']);
-        $this->assertSame($this->user->id, $task['assigned_to_id']);
+        $taskStatusId = $task->status_id ?? null;
+        $createdById = $task->created_by_id ?? null;
+        $assignedToId = $task->assigned_to_id ?? null;
+        $taskName = $task->name;
+        $taskDescription = $task->description;
+        $this->assertSame('Первая задача', $taskName);
+        $this->assertSame('Описание первой задачи', $taskDescription);
+        $this->assertSame($id, $taskStatusId);
+        $this->assertSame($this->user->id, $createdById);
+        $this->assertSame($this->user->id, $assignedToId);
     }
 
     public function testUpdate(): void
