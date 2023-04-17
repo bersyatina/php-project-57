@@ -63,7 +63,7 @@ class TaskController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'unique:' . TaskStatus::class],
+                'name' => ['required', 'string', 'unique:' . Task::class],
                 'description' => 'nullable|string',
                 'status_id' => 'required|exists:task_statuses,id',
                 'assigned_to_id' => 'nullable|exists:users,id',
@@ -127,7 +127,7 @@ class TaskController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'unique:' . TaskStatus::class],
+                'name' => ['required', 'string', 'unique:' . Task::class],
                 'description' => 'nullable|string',
                 'status_id' => 'required|exists:task_statuses,id',
                 'assigned_to_id' => 'nullable|exists:users,id',

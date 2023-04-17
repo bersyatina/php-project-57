@@ -115,7 +115,7 @@ class TaskTest extends TestCase
         $status = TaskStatus::orderByDesc('id')->limit(1)->first();
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'сделать выгрузку',
+                'name' => 'сделать выгрузку1',
                 'description' => 'Выгрузка из Excel',
                 'status_id' => $status->id,
                 'created_by_id' => $this->user->id,
@@ -136,7 +136,7 @@ class TaskTest extends TestCase
 
         $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'сделать выгрузку1',
+                'name' => 'сделать выгрузку2',
                 'description' => 'Выгрузка из Excel, pdf',
                 'status_id' => $status->id,
                 'created_by_id' => $this->user->id,
@@ -145,6 +145,6 @@ class TaskTest extends TestCase
         $task = Task::all()->sortByDesc('id')->first();
         $response = $this->actingAs($this->user)->get("/tasks/{$task->id}");
         $this->assertTrue(str_contains($response->getContent(), 'Выгрузка из Excel, pdf'));
-        $this->assertTrue(str_contains($response->getContent(), 'сделать выгрузку1'));
+        $this->assertTrue(str_contains($response->getContent(), 'сделать выгрузку2'));
     }
 }
