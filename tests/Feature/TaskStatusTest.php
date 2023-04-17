@@ -61,17 +61,17 @@ class TaskStatusTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->post('/task_statuses', [
-                'name' => 'новая3',
+                'name' => 'новая4',
             ]);
-        $response->assertRedirect('/task_statuses');
         $status = TaskStatus::all()->sortByDesc('id')->first();
+        $response->assertRedirect("/task_statuses");
 
         $newResponse = $this->actingAs($this->user)
             ->get("/task_statuses/{$status->id}/edit");
         $newResponse->assertOk();
 
         $newStatus = TaskStatus::all()->sortByDesc('id')->first();
-        $this->assertSame('новая3', $newStatus->name);
+        $this->assertSame('новая4', $newStatus->name);
     }
 
     public function testDestroy(): void
