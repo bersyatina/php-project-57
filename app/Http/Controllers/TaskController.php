@@ -61,12 +61,16 @@ class TaskController extends Controller
             return abort(403);
         }
 
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'status_id' => 'required|exists:task_statuses,id',
-            'assigned_to_id' => 'nullable|exists:users,id',
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'unique:' . TaskStatus::class],
+                'description' => 'nullable|string',
+                'status_id' => 'required|exists:task_statuses,id',
+                'assigned_to_id' => 'nullable|exists:users,id',
+                'labels' => 'nullable|array',
+            ],
+            $messages = ['unique' => 'Задача с таким именем уже существует']
+        );
 
         Task::create([
             'name' => $request->get('name'),
@@ -121,13 +125,16 @@ class TaskController extends Controller
             return abort(403);
         }
 
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'status_id' => 'required|exists:task_statuses,id',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'labels' => 'nullable|array',
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'unique:' . TaskStatus::class],
+                'description' => 'nullable|string',
+                'status_id' => 'required|exists:task_statuses,id',
+                'assigned_to_id' => 'nullable|exists:users,id',
+                'labels' => 'nullable|array',
+            ],
+            $messages = ['unique' => 'Задача с таким именем уже существует']
+        );
 
         $task = Task::findOrFail($id);
         $task->update([
@@ -141,8 +148,8 @@ class TaskController extends Controller
 
         if (!empty($labels = $request->get('labels'))) {
             array_map(fn($label) => !in_array($label, $toManyLabelsTask) ? LabelTask::insert([
-                    'label_id' => $label,
-                    'task_id' => $task->id]) : true, $labels);
+                'label_id' => $label,
+                'task_id' => $task->id]) : true, $labels);
         }
         array_map(fn($label) => !in_array($label, $labels) ? $task->labels()->detach($label) : true, $toManyLabelsTask);
         flash('Задача успешно изменена')->success();
