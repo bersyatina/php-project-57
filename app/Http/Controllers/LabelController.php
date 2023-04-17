@@ -107,7 +107,7 @@ class LabelController extends Controller
         if (Auth::guest()) {
             return abort(403);
         }
-        $label = Label::find($id);
+        $label = Label::findOrFail($id);
         if ($label->tasks()->count() > 0) {
             flash('Не удалось удалить метку')->error();
             return redirect('/labels');

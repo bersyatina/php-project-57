@@ -60,13 +60,13 @@ class TaskTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'тестовая',
             ]);
-        $status = TaskStatus::all()->sortByDesc('id')->first();
+        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
 
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
                 'name' => 'тестовая задача',
                 'description' => 'Описание обновленной задачи',
-                'status_id' => $status->id,
+                'status_id' => $statusId,
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
@@ -77,7 +77,7 @@ class TaskTest extends TestCase
             ->post('/task_statuses', [
                 'name' => 'новая2',
             ]);
-        $newStatusId = TaskStatus::all()->sortByDesc('id')->first()->id;
+        $newStatusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
 
         $newResponse = $this->actingAs($this->user)
             ->patch("/tasks/{$id}", [
@@ -153,7 +153,7 @@ class TaskTest extends TestCase
             ]);
         $taskId = Task::all()->sortByDesc('id')->first()->id ?? null;
         $response = $this->actingAs($this->user)->get("/tasks/{$taskId}");
-        $this->assertTrue(str_contains($response->getContent(), 'Выгрузка из Excel, pdf'));
-        $this->assertTrue(str_contains($response->getContent(), 'сделать выгрузку2'));
+        $this->assertTrue(str_contains($response->getContent() ?? '', 'Выгрузка из Excel, pdf'));
+        $this->assertTrue(str_contains($response->getContent() ?? '', 'сделать выгрузку2'));
     }
 }
