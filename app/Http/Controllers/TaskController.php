@@ -41,7 +41,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return !empty(Auth::user()->id)
+        return Auth::guest() === false
             ? view('pages.task', [
                 'task' => new Task(),
                 'statuses' => TaskStatus::all(),
@@ -57,7 +57,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        if (!isset(Auth::user()->id)) {
+        if (Auth::guest()) {
             return abort(403);
         }
 
@@ -101,11 +101,11 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        if (!isset(Auth::user()->id)) {
+        if (Auth::guest()) {
             return abort(403);
         }
         $task = Task::findOrFail($id);
-        $taskLabels = $task->labels;
+        $taskLabels = $task->labels()->get();
 
         return view('pages.task', [
             'task' => $task,
@@ -121,7 +121,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (!isset(Auth::user()->id)) {
+        if (Auth::guest()) {
             return abort(403);
         }
 
@@ -144,9 +144,9 @@ class TaskController extends Controller
             'assigned_to_id' => $request->get('assigned_to_id'),
         ]);
 
-        $toManyLabelsTask = LabelTask::select('label_id')->where('task_id', $task->id)->get()->toArray();
-        $labels = $request->get('labels');
-        if (count($labels) > 0) {
+        $toManyLabelsTask = LabelTask::where('task_id', $task['id'])->get()->pluck('label_id')->toArray();
+
+        if (!empty($labels = $request->get('labels'))) {
             array_map(fn($label) => !in_array($label, $toManyLabelsTask, true) ? LabelTask::insert([
                 'label_id' => $label,
                 'task_id' => $task->id]) : true, $labels);
@@ -163,12 +163,11 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!isset(Auth::user()->id)) {
+        if (Auth::guest()) {
             return abort(403);
         }
         $task = Task::find($id);
-
-        if (Auth::id() === $task->get('created_by_id')) {
+        if (Auth::id() === $task['created_by_id']) {
             $task->delete();
             flash('Задача успешно удалена')->success();
             return redirect('/tasks');
