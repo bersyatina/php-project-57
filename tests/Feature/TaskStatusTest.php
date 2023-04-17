@@ -11,6 +11,7 @@ use Tests\TestCase;
 
 class TaskStatusTest extends TestCase
 {
+    public User $user;
     /**
      * A basic feature test example.
      */

@@ -144,7 +144,7 @@ class TaskController extends Controller
             'assigned_to_id' => $request->get('assigned_to_id'),
         ]);
 
-        $toManyLabelsTask = LabelTask::where('task_id', $task['id'])->get()->pluck('label_id')->toArray();
+        $toManyLabelsTask = LabelTask::select('label_id')->where('task_id', $task['id'])->get()->toArray();
 
         if (!empty($labels = $request->get('labels'))) {
             array_map(fn($label) => !in_array($label, $toManyLabelsTask, true) ? LabelTask::insert([

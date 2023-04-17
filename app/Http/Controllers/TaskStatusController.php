@@ -27,7 +27,7 @@ class TaskStatusController extends Controller
      */
     public function create()
     {
-        return Auth::user()
+        return Auth::guest() === false
             ? view('pages.status', [
                 'status' => [],
             ])
@@ -39,7 +39,7 @@ class TaskStatusController extends Controller
      */
     public function store(Request $request): object
     {
-        if (!Auth::user()) {
+        if (Auth::guest()) {
             return abort(403);
         }
 
@@ -61,7 +61,7 @@ class TaskStatusController extends Controller
      */
     public function edit(string $id)
     {
-        if (!Auth::user()) {
+        if (Auth::guest()) {
             return abort(403);
         }
         return view('pages.status', [
@@ -74,7 +74,7 @@ class TaskStatusController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (!Auth::user()) {
+        if (Auth::guest()) {
             return abort(403);
         }
 
@@ -96,11 +96,11 @@ class TaskStatusController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {
-        if (!Auth::user()) {
+        if (Auth::guest()) {
             return abort(403);
         }
         $status = TaskStatus::find($id);
-        if ($status->tasks->count() > 0) {
+        if ($status->tasks()->count() > 0) {
             flash('Не удалось удалить статус')->error();
             return redirect('/task_statuses');
         }
