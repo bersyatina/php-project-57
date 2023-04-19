@@ -19,6 +19,8 @@ update db:
 	php artisan db:seed
 
 test:
+	php artisan migrate:rollback
+	php artisan migrate
 	php artisan test
 
 test-coverage:
