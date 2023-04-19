@@ -42,7 +42,7 @@ class TaskStatusTest extends TestCase
 
         $response->assertRedirect('/task_statuses');
         $statusName = TaskStatus::orderByDesc('created_at')->first()->name ?? '';
-        $this->assertSame('новая', $statusName);
+        $this->assertSame($name, $statusName);
     }
 
     public function testUpdate(): void
