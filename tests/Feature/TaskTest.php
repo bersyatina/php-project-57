@@ -25,15 +25,17 @@ class TaskTest extends TestCase
         $response = $this->actingAs($this->user)->get('/tasks/create');
         $response->assertOk();
 
+        $name = 'новая17 ' . time();
         $this->actingAs($this->user)->post('/task_statuses', [
-            'name' => 'новая17',
+            'name' => $name,
         ]);
         $status = TaskStatus::orderByDesc('created_at')->first();
 
         if ($status !== null) {
+            $taskName = 'Первая задача ' . time();
             $response = $this->actingAs($this->user)
                 ->post('/tasks', [
-                    'name' => 'Первая задача',
+                    'name' => $taskName,
                     'description' => 'Описание первой задачи',
                     'status_id' => $status->id,
                     'created_by_id' => $this->user->id,
@@ -42,7 +44,7 @@ class TaskTest extends TestCase
             $response->assertRedirect('/tasks');
             $task = Task::orderByDesc('created_at')->first();
             if ($task !== null) {
-                $this->assertSame('Первая задача', $task->name);
+                $this->assertSame($taskName, $task->name);
                 $this->assertSame('Описание первой задачи', $task->description);
                 $this->assertSame($status->id, $task->status_id);
                 $this->assertSame($this->user->id, $task->created_by_id);
@@ -75,10 +77,10 @@ class TaskTest extends TestCase
                 'name' => 'новая2',
             ]);
         $newStatusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-
+        $taskName = 'Измененная ' . time();
         $newResponse = $this->actingAs($this->user)
             ->patch("/tasks/{$id}", [
-                'name' => 'Измененная',
+                'name' => $taskName,
                 'description' => 'Описание измененной задачи',
                 'status_id' => $newStatusId,
             ]);
@@ -86,7 +88,7 @@ class TaskTest extends TestCase
         $newResponse->assertRedirect('/tasks');
         $newTask = Task::all()->sortByDesc('id')->first();
         if ($newTask !== null) {
-            $this->assertSame('Измененная', $newTask->name);
+            $this->assertSame($taskName, $newTask->name);
             $this->assertSame('Описание измененной задачи', $newTask->description);
             $this->assertSame($newStatusId, $newTask->status_id);
         }
@@ -95,9 +97,10 @@ class TaskTest extends TestCase
     public function testEdit(): void
     {
         $statusId = TaskStatus::orderByDesc('id')->limit(1)->first()->id ?? null;
+        $name = 'сделать выгрузку ' . time();
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'сделать выгрузку',
+                'name' => $name,
                 'description' => 'Выгрузка из Excel',
                 'status_id' => $statusId,
                 'created_by_id' => $this->user->id,
@@ -112,7 +115,7 @@ class TaskTest extends TestCase
         $newResponse->assertOk();
 
         $newTaskName = Task::all()->sortByDesc('id')->first()->name ?? '';
-        $this->assertSame('сделать выгрузку', $newTaskName);
+        $this->assertSame($name, $newTaskName);
     }
 
     public function testDestroy(): void
@@ -139,10 +142,10 @@ class TaskTest extends TestCase
     public function testShow(): void
     {
         $statusId = TaskStatus::orderByDesc('id')->limit(1)->first()->id ?? null;
-
+        $name = 'сделать выгрузку2 ' . time();
         $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'сделать выгрузку2',
+                'name' => $name,
                 'description' => 'Выгрузка из Excel, pdf',
                 'status_id' => $statusId,
                 'created_by_id' => $this->user->id,
@@ -152,6 +155,6 @@ class TaskTest extends TestCase
         $response = $this->actingAs($this->user)->get("/tasks/{$taskId}");
         $content = $response->getContent();
         $this->assertTrue(str_contains($content !== false ? $content : '', 'Выгрузка из Excel, pdf'));
-        $this->assertTrue(str_contains($content !== false ? $content : '', 'сделать выгрузку2'));
+        $this->assertTrue(str_contains($content !== false ? $content : '', $name));
     }
 }

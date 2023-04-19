@@ -30,16 +30,16 @@ class LabelTest extends TestCase
             ->get('/labels/create');
 
         $response->assertOk();
-
+        $name = 'новая ' . time();
         $response = $this->actingAs($this->user)
             ->post('/labels', [
-                'name' => 'новая',
+                'name' => $name,
                 'description' => 'описание новой метки',
             ]);
         $response->assertRedirect('/labels');
         $label = Label::orderByDesc('created_at')->first();
         if ($label !== null) {
-            $this->assertSame('новая', $label->name);
+            $this->assertSame($name, $label->name);
             $this->assertSame('описание новой метки', $label->description);
         }
     }
@@ -52,25 +52,27 @@ class LabelTest extends TestCase
                 'description' => 'Описание новаой метки 2',
             ]);
         $labelId = Label::all()->sortByDesc('id')->first()->id ?? null;
+        $name = 'новая 3 ' . time();
         $newResponse = $this->actingAs($this->user)
             ->patch("/labels/{$labelId}", [
-                'name' => 'новая3',
+                'name' => $name,
                 'description' => 'Описание новаой метки 3',
             ]);
 
         $newResponse->assertRedirect('/labels');
         $newLabel = Label::all()->sortByDesc('id')->first();
         if ($newLabel !== null) {
-            $this->assertSame('новая3', $newLabel->name);
+            $this->assertSame($name, $newLabel->name);
             $this->assertSame('Описание новаой метки 3', $newLabel->description);
         }
     }
 
     public function testEdit(): void
     {
+        $name = 'новая 4 ' . time();
         $response = $this->actingAs($this->user)
             ->post('/labels', [
-                'name' => 'новая4',
+                'name' => $name,
                 'description' => 'Описание новаой метки 4',
             ]);
         $response->assertRedirect('/labels');
@@ -82,7 +84,7 @@ class LabelTest extends TestCase
 
         $newLabel = Label::all()->sortByDesc('id')->first();
         if ($newLabel !== null) {
-            $this->assertSame('новая4', $newLabel->name);
+            $this->assertSame($name, $newLabel->name);
             $this->assertSame('Описание новаой метки 4', $newLabel->description);
         }
     }

@@ -44,15 +44,16 @@ class TaskStatusTest extends TestCase
     public function testUpdate(): void
     {
         $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
+        $name = 'новая 3 ' . time();
         $newResponse = $this->actingAs($this->user)
             ->patch("/task_statuses/{$statusId}", [
-                'name' => 'новая3',
+                'name' => $name,
             ]);
 
         $newResponse->assertRedirect('/task_statuses');
         $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
 
-        $this->assertSame('новая3', $newStatusName);
+        $this->assertSame($name, $newStatusName);
     }
 
     public function testEdit(): void
