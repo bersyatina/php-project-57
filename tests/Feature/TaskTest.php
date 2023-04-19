@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class TaskTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     public User $user;
 
     public function setUp(): void
@@ -28,7 +28,7 @@ class TaskTest extends TestCase
         $response = $this->actingAs($this->user)->get('/tasks/create');
         $response->assertOk();
 
-        $name = 'новая17 ' . time();
+        $name = 'новая177 ' . time();
         $this->actingAs($this->user)->post('/task_statuses', [
             'name' => $name,
         ]);
