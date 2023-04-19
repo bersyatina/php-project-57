@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use App\Models\Label;
 use App\Models\User;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LabelTest extends TestCase
 {
+    use RefreshDatabase;
+
     public User $user;
 
     public function setUp(): void

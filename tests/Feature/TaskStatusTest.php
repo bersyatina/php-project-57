@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use App\Models\TaskStatus;
 use App\Models\User;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TaskStatusTest extends TestCase
 {
+    use RefreshDatabase;
+
     public User $user;
     /**
      * A basic feature test example.
@@ -31,9 +34,10 @@ class TaskStatusTest extends TestCase
 
         $response->assertOk();
 
+        $name = 'новая ' . time();
         $response = $this->actingAs($this->user)
             ->post('/task_statuses', [
-                'name' => 'новая',
+                'name' => $name,
             ]);
 
         $response->assertRedirect('/task_statuses');

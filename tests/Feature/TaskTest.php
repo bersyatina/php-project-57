@@ -6,9 +6,12 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TaskTest extends TestCase
 {
+    use RefreshDatabase;
+    
     public User $user;
 
     public function setUp(): void
@@ -60,15 +63,16 @@ class TaskTest extends TestCase
                 'name' => 'тестовая',
             ]);
         $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-
+        $name = 'тестовая задача ' . time();
         $response = $this->actingAs($this->user)
             ->post('/tasks', [
-                'name' => 'тестовая задача',
+                'name' => $name,
                 'description' => 'Описание обновленной задачи',
                 'status_id' => $statusId,
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
+
         $response->assertRedirect('/tasks');
         $id = Task::all()->sortByDesc('id')->first()->id ?? null;
 
