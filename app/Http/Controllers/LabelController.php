@@ -43,7 +43,7 @@ class LabelController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'unique:' . Label::class],
+                'name' => ['required', 'string', 'max:255', 'unique:' . Label::class],
                 'description' => 'nullable|string'
             ],
             $messages = [
@@ -84,7 +84,7 @@ class LabelController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'unique:' . Label::class],
+                'name' => ['required', 'string', 'max:255', 'unique:' . Label::class],
                 'description' => 'nullable|string'
             ],
             $messages = ['unique' => 'Метка с таким именем уже существует']

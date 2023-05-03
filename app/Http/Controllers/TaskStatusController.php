@@ -44,7 +44,7 @@ class TaskStatusController extends Controller
         }
 
         $request->validate(
-            ['name' => ['required', 'string', 'unique:' . TaskStatus::class]],
+            ['name' => ['required', 'string', 'max:255', 'unique:' . TaskStatus::class]],
             $messages = ['unique' => 'Статус с таким именем уже существует']
         );
 
@@ -79,7 +79,7 @@ class TaskStatusController extends Controller
         }
 
         $request->validate(
-            ['name' => ['required', 'string', 'unique:' . TaskStatus::class]],
+            ['name' => ['required', 'string', 'max:255', 'unique:' . TaskStatus::class]],
             $messages = ['unique' => 'Статус с таким именем уже существует']
         );
 
