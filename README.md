@@ -12,7 +12,7 @@ https://sour-skate-production.up.railway.app
 - Extensions: guzzle, curl
 - Composer 2.2.6
 - PostgreSQL
-- laravel/framework v10.0, tailwindcss, blade
+- laravel/framework v10.0, tailwindcss 3.2.7, blade
 
 ### Setup
 
