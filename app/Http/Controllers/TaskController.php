@@ -9,6 +9,7 @@ use App\Models\TaskStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -26,6 +27,7 @@ class TaskController extends Controller
                 AllowedFilter::exact('assigned_to_id'),
                 AllowedFilter::exact('created_by_id'),
             ])
+            ->orderByDesc('created_at')
             ->paginate(15);
 
         return view('pages.tasks', [
@@ -127,7 +129,12 @@ class TaskController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'max:255', 'unique:' . Task::class],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('tasks')->ignore($id)
+                ],
                 'description' => 'nullable|string',
                 'status_id' => 'required|exists:task_statuses,id',
                 'assigned_to_id' => 'nullable|exists:users,id',

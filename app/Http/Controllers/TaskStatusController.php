@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TaskStatusController extends Controller
@@ -44,7 +45,14 @@ class TaskStatusController extends Controller
         }
 
         $request->validate(
-            ['name' => ['required', 'string', 'max:255', 'unique:' . TaskStatus::class]],
+            [
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'unique:' . TaskStatus::class
+                ]
+            ],
             $messages = ['unique' => 'Статус с таким именем уже существует']
         );
 
@@ -79,7 +87,14 @@ class TaskStatusController extends Controller
         }
 
         $request->validate(
-            ['name' => ['required', 'string', 'max:255', 'unique:' . TaskStatus::class]],
+            [
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('task_statuses')->ignore($id)
+                ]
+            ],
             $messages = ['unique' => 'Статус с таким именем уже существует']
         );
 

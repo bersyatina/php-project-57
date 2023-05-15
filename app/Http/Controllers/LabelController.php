@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Label;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class LabelController extends Controller
@@ -84,7 +85,12 @@ class LabelController extends Controller
 
         $request->validate(
             [
-                'name' => ['required', 'string', 'max:255', 'unique:' . Label::class],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('labels')->ignore($id)
+                ],
                 'description' => 'nullable|string'
             ],
             $messages = ['unique' => 'Метка с таким именем уже существует']
