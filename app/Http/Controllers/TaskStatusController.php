@@ -53,7 +53,6 @@ class TaskStatusController extends Controller
             $messages = ['unique' => 'Статус с таким именем уже существует']
         );
 
-
         TaskStatus::create([
             'name' => $request->get('name')
         ]);

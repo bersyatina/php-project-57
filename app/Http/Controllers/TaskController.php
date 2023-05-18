@@ -166,7 +166,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $id)
+    public function destroy($id)
     {
         $task = Task::findOrFail($id);
         $this->authorize('delete', $task);

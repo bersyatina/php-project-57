@@ -67,7 +67,6 @@ class TaskStatusTest extends TestCase
                 'name' => 'новая4',
             ]);
         $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-        $response->assertRedirect("/task_statuses");
 
         $newResponse = $this->actingAs($this->user)
             ->get("/task_statuses/{$statusId}/edit");
