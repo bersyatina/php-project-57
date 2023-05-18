@@ -62,18 +62,20 @@ class TaskStatusTest extends TestCase
 
     public function testEdit(): void
     {
+        $name = 'новая 4 ' . time();
         $response = $this->actingAs($this->user)
             ->post('/task_statuses', [
-                'name' => 'новая4',
+                'name' => $name,
             ]);
         $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
+        $response->assertRedirect("/task_statuses");
 
         $newResponse = $this->actingAs($this->user)
             ->get("/task_statuses/{$statusId}/edit");
         $newResponse->assertOk();
 
         $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
-        $this->assertSame('новая4', $newStatusName);
+        $this->assertSame($name, $newStatusName);
     }
 
     public function testDestroy(): void
