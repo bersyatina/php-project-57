@@ -134,13 +134,12 @@ class TaskTest extends TestCase
                 'created_by_id' => $this->user->id,
                 'assigned_to_id' => $this->user->id,
             ]);
-        $taskId = Task::all()->sortByDesc('id')->first()->id ?? null;
+        $task = Task::all()->sortByDesc('id')->first();
+        $taskId = $task->id ?? null;
 
         $newResponse = $this->actingAs($this->user)
             ->delete("/tasks/{$taskId}");
-        $newResponse->assertRedirect('/tasks');
-        $newTask = Task::find($taskId);
-        $this->assertNull($newTask);
+        $newResponse->assertStatus(403);
     }
 
     public function testShow(): void

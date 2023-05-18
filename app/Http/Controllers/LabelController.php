@@ -26,11 +26,10 @@ class LabelController extends Controller
      */
     public function create()
     {
-        return Auth::guest() === false
-            ? view('pages.label', [
-                'label' => new Label()
-            ])
-            : abort(403);
+        $this->authorize('create', Label::class);
+        return view('pages.label', [
+            'label' => new Label()
+        ]);
     }
 
     /**
@@ -38,9 +37,7 @@ class LabelController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', Label::class);
 
         $request->validate(
             [
@@ -66,9 +63,7 @@ class LabelController extends Controller
      */
     public function edit(string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', Label::class);
         return view('pages.label', [
             'label' => Label::findOrFail($id),
         ]);
@@ -79,9 +74,7 @@ class LabelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', Label::class);
 
         $request->validate(
             [
@@ -110,9 +103,7 @@ class LabelController extends Controller
      */
     public function destroy(string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('delete', Label::class);
         $label = Label::findOrFail($id);
         if ($label->tasks()->count() > 0) {
             flash('Не удалось удалить метку')->error();

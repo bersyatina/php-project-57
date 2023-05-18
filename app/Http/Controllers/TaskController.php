@@ -16,6 +16,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class TaskController extends Controller
 {
+//    public function __construct() {
+//        $this->authorizeResource(Task::class);
+//        // Post::class это модель для поиска Политики
+//        // post - имя параметра
+//    }
     /**
      * Display a listing of the resource.
      */
@@ -43,15 +48,14 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return Auth::guest() === false
-            ? view('pages.task', [
-                'task' => new Task(),
-                'statuses' => TaskStatus::all(),
-                'labels' => Label::all(),
-                'users' => User::all(),
-                'taskLabels' => [],
-            ])
-            : abort(403);
+        $this->authorize('create', Task::class);
+        return view('pages.task', [
+            'task' => new Task(),
+            'statuses' => TaskStatus::all(),
+            'labels' => Label::all(),
+            'users' => User::all(),
+            'taskLabels' => [],
+        ]);
     }
 
     /**
@@ -59,10 +63,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
-
+        $this->authorize('create', Task::class);
         $request->validate(
             [
                 'name' => ['required', 'string', 'max:255', 'unique:' . Task::class],
@@ -88,7 +89,7 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id): View
     {
         $task = Task::findOrFail($id);
         $taskLabels = $task->labels()->get();
@@ -101,12 +102,10 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id): View
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
         $task = Task::findOrFail($id);
+        $this->authorize('update', $task);
         $taskLabels = $task->labels()->get();
 
         return view('pages.task', [
@@ -123,10 +122,6 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
-
         $request->validate(
             [
                 'name' => [
@@ -142,8 +137,9 @@ class TaskController extends Controller
             ],
             $messages = ['unique' => 'Задача с таким именем уже существует']
         );
-
         $task = Task::findOrFail($id);
+        $this->authorize('update', $task);
+
         $task->update([
             'name' => $request->get('name'),
             'description' => $request->get('description'),
@@ -170,12 +166,10 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
         $task = Task::findOrFail($id);
+        $this->authorize('delete', $task);
         if (Auth::id() === $task->created_by_id) {
             $task->delete();
             flash('Задача успешно удалена')->success();

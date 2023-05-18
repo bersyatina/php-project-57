@@ -28,11 +28,10 @@ class TaskStatusController extends Controller
      */
     public function create()
     {
-        return Auth::guest() === false
-            ? view('pages.status', [
-                'status' => [],
-            ])
-            : abort(403);
+        $this->authorize('create', TaskStatus::class);
+        return view('pages.status', [
+            'status' => [],
+        ]);
     }
 
     /**
@@ -40,9 +39,7 @@ class TaskStatusController extends Controller
      */
     public function store(Request $request): object
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', TaskStatus::class);
 
         $request->validate(
             [
@@ -69,9 +66,7 @@ class TaskStatusController extends Controller
      */
     public function edit(string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', TaskStatus::class);
         return view('pages.status', [
             'status' => TaskStatus::findOrFail($id),
         ]);
@@ -82,9 +77,7 @@ class TaskStatusController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', TaskStatus::class);
 
         $request->validate(
             [
@@ -111,9 +104,7 @@ class TaskStatusController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('delete', TaskStatus::class);
         $status = TaskStatus::findOrFail($id);
         if ($status->tasks()->count() > 0) {
             flash('Не удалось удалить статус')->error();
