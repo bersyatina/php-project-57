@@ -63,11 +63,12 @@ class TaskStatusController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $id)
     {
+        $status = TaskStatus::findOrFail($id);
         $this->authorize('create', TaskStatus::class);
         return view('pages.status', [
-            'status' => TaskStatus::findOrFail($id),
+            'status' => $status,
         ]);
     }
 
@@ -76,8 +77,6 @@ class TaskStatusController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->authorize('create', TaskStatus::class);
-
         $request->validate(
             [
                 'name' => [
@@ -91,6 +90,7 @@ class TaskStatusController extends Controller
         );
 
         $status = TaskStatus::findOrFail($id);
+        $this->authorize('create', TaskStatus::class);
         $status->update([
             'name' => $request->get('name')
         ]);
@@ -103,8 +103,8 @@ class TaskStatusController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {
-        $this->authorize('delete', TaskStatus::class);
         $status = TaskStatus::findOrFail($id);
+        $this->authorize('delete', TaskStatus::class);
         if ($status->tasks()->count() > 0) {
             flash('Не удалось удалить статус')->error();
             return redirect('/task_statuses');

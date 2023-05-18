@@ -63,9 +63,10 @@ class LabelController extends Controller
      */
     public function edit(string $id)
     {
+        $label = Label::findOrFail($id);
         $this->authorize('create', Label::class);
         return view('pages.label', [
-            'label' => Label::findOrFail($id),
+            'label' => $label,
         ]);
     }
 
@@ -74,8 +75,6 @@ class LabelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->authorize('create', Label::class);
-
         $request->validate(
             [
                 'name' => [
@@ -90,6 +89,7 @@ class LabelController extends Controller
         );
 
         $label = Label::findOrFail($id);
+        $this->authorize('create', Label::class);
         $label->update([
             'name' => $request->get('name'),
             'description' => $request->get('description')
@@ -103,8 +103,8 @@ class LabelController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->authorize('delete', Label::class);
         $label = Label::findOrFail($id);
+        $this->authorize('delete', Label::class);
         if ($label->tasks()->count() > 0) {
             flash('Не удалось удалить метку')->error();
             return redirect('/labels');

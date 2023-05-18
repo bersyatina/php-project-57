@@ -16,11 +16,6 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class TaskController extends Controller
 {
-//    public function __construct() {
-//        $this->authorizeResource(Task::class);
-//        // Post::class это модель для поиска Политики
-//        // post - имя параметра
-//    }
     /**
      * Display a listing of the resource.
      */
@@ -46,7 +41,7 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         $this->authorize('create', Task::class);
         return view('pages.task', [
@@ -89,7 +84,7 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id): View
+    public function show(string $id): View
     {
         $task = Task::findOrFail($id);
         $taskLabels = $task->labels()->get();
@@ -102,7 +97,7 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit(string $id): View
     {
         $task = Task::findOrFail($id);
         $this->authorize('update', $task);
@@ -166,7 +161,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $task = Task::findOrFail($id);
         $this->authorize('delete', $task);

@@ -48,20 +48,4 @@ class TaskStatusPolicy
     {
         return Auth::check();
     }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, TaskStatus $taskStatus): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, TaskStatus $taskStatus): bool
-    {
-        //
-    }
 }
