@@ -38,7 +38,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->id === $task->created_by_id;
+        return Auth::check();
     }
 
     /**
@@ -54,7 +54,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return $user->id === $task->created_by_id;
+        return Auth::check();
     }
 
     /**
