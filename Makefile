@@ -6,6 +6,8 @@ install:
 	composer install
 	cp -n .env.example .env || true
 	php artisan key:gen --ansi
+	npm ci
+	npm run build
 
 update db:
 	rm database/database.sqlite
@@ -15,8 +17,6 @@ update db:
 	touch database/database.sqlite
 	php artisan migrate
 	php artisan db:seed
-	npm ci
-	npm run build
 
 test:
 	php artisan migrate:rollback
