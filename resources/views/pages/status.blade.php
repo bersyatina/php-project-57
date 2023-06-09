@@ -4,7 +4,7 @@
           action="{{ !empty($status->id) ? route('task_statuses.update', $status->id) : route('task_statuses.store') }}"
           accept-charset="UTF-8" class="w-50">
         @csrf
-        @method(empty($status) ? 'post' : 'patch')
+        @method(empty($status->id) ? 'post' : 'patch')
         <div class="flex flex-col">
             <div>
                 <label for="name">Имя</label>
