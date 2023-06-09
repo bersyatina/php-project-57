@@ -11,7 +11,7 @@
             </div>
             <div class="mt-2">
                 <input class="rounded border-gray-300 w-1/3" name="name" type="text" id="name"
-                       value="{{ $status->name ?? '' }}">
+                       value="{{ old('name') ?? $status->name }}">
             </div>
             @error('name')
                 <div class="text-rose-600">{{ $message }}</div>

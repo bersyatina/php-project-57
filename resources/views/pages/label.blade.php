@@ -15,7 +15,7 @@
                        name="name"
                        type="text"
                        id="name"
-                       value="{{ $label->name ?? '' }}">
+                       value="{{ old('name') ?? $label->name }}">
             </div>
             @error('name')
                 <div class="text-rose-600">{{ $message }}</div>
@@ -27,7 +27,7 @@
                         <textarea class="rounded border-gray-300 w-1/3"
                                   name="description"
                                   id="description"
-                        >{{ $label->description ?? '' }}</textarea>
+                        >{{ old('description') ?? $label->description }}</textarea>
             </div>
             @error('description')
                 <div class="text-rose-600">{{ $message }}</div>

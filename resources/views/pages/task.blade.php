@@ -15,7 +15,7 @@
                        name="name"
                        type="text"
                        id="name"
-                       value="{{ $task->name ?? '' }}">
+                       value="{{ old('name') ?? $task->name }}">
             </div>
             @error('name')
                 <div class="text-rose-600">{{ $message }}</div>
@@ -27,7 +27,7 @@
                         <textarea class="rounded border-gray-300 w-1/3"
                                   name="description"
                                   id="description"
-                        >{{ $task->description ?? '' }}</textarea>
+                        >{{ old('description') ?? $task->description }}</textarea>
             </div>
             @error('description')
             <div class="text-rose-600">{{ $message }}</div>
@@ -40,7 +40,7 @@
                     <option value="">----------</option>
                     @if($statuses->count() > 0)
                         @foreach($statuses as $index => $status)
-                            @if($status->id === $task->status_id)
+                            @if($status->id == old('status_id') || $status->id === $task->status_id)
                                 <option value="{{ $status->id }}"
                                         selected="selected">{{ $status->name }}</option>
                             @else
@@ -61,7 +61,7 @@
                     <option value="">----------</option>
                     @if($users->count() > 0)
                         @foreach($users as $index => $user)
-                            @if($user->id === $task->assigned_to_id)
+                            @if($user->id == old('assigned_to_id') || $user->id === $task->assigned_to_id)
                                 <option value="{{ $user->id }}" selected="selected">{{ $user->name }}</option>
                             @else
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -82,8 +82,10 @@
                     <option value=""></option>
                     @isset($labels[0])
                         @foreach($labels as $index => $label)
-                            @if(in_array($label->id, $taskLabels))
-                                <option value="{{ $label->id }}" selected="selected">{{ $label->name }}</option>
+                            @if(!empty(old('labels')) && in_array($label->id, old('labels')))
+                                <option value="{{ $label->id }}" selected>{{ $label->name }}</option>
+                            @elseif(empty(old('labels')) && in_array($label->id, $taskLabels))
+                                <option value="{{ $label->id }}" selected>{{ $label->name }}</option>
                             @else
                                 <option value="{{ $label->id }}">{{ $label->name }}</option>
                             @endif
