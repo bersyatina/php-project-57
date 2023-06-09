@@ -30,7 +30,7 @@ class TaskStatusController extends Controller
     {
         $this->authorize('create', TaskStatus::class);
         return view('pages.status', [
-            'status' => [],
+            'status' => new TaskStatus(),
         ]);
     }
 
