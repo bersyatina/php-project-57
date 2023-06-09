@@ -84,7 +84,7 @@
                         @foreach($labels as $index => $label)
                             @if(!empty(old('labels')) && in_array($label->id, old('labels')))
                                 <option value="{{ $label->id }}" selected>{{ $label->name }}</option>
-                            @elseif(empty(old('labels')) && in_array($label->id, $taskLabels->pluck('id')->toArray()))
+                            @elseif(empty(old('labels')) && in_array($label->id, $taskLabels))
                                 <option value="{{ $label->id }}" selected>{{ $label->name }}</option>
                             @else
                                 <option value="{{ $label->id }}">{{ $label->name }}</option>

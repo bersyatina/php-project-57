@@ -101,7 +101,8 @@ class TaskController extends Controller
     {
         $task = Task::findOrFail($id);
         $this->authorize('update', $task);
-        $taskLabels = $task->labels()->select('id')->get();
+        $taskLabels = $task->labels()->select('id')->get()->toArray();
+        $taskLabels = array_map(fn($item) => $item['id'], $taskLabels);
         return view('pages.task', [
             'task' => $task,
             'statuses' => TaskStatus::all(),
