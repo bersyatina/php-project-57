@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLabelRequest;
+use App\Http\Requests\UpdateLabelRequest;
 use App\Models\Label;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +18,7 @@ class LabelController extends Controller
     public function index(Request $request): View
     {
         return view('pages.labels', [
-            'labels' => Label::all(),
-            'user' => $request->user(),
+            'labels' => Label::paginate(15)
         ]);
     }
 
@@ -35,27 +36,19 @@ class LabelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreLabelRequest $request)
     {
         $this->authorize('create', Label::class);
 
-        $request->validate(
-            [
-                'name' => ['required', 'string', 'max:255', 'unique:' . Label::class],
-                'description' => 'nullable|string'
-            ],
-            $messages = [
-                'name.unique' => 'Метка с таким именем уже существует',
-                'name.required' => 'Это обязательное поле'
-            ],
-        );
+        $validated = $request->validated();
 
-        Label::create([
-            'name' => $request->get('name'),
-            'description' => $request->get('description')
-        ]);
-        flash('Метка успешно создана')->success();
-        return redirect('/labels');
+        $label = new Label();
+
+        $label->fill($validated);
+        $label->save();
+
+        flash(__('controllers.label_create'))->success();
+        return redirect()->route('labels.index');
     }
 
     /**
@@ -73,44 +66,30 @@ class LabelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateLabelRequest $request, Label $label)
     {
-        $request->validate(
-            [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('labels')->ignore($id)
-                ],
-                'description' => 'nullable|string'
-            ],
-            $messages = ['unique' => 'Метка с таким именем уже существует']
-        );
+        $this->authorize('update', [Label::class]);
+        $validated = $request->validated();
 
-        $label = Label::findOrFail($id);
-        $this->authorize('create', Label::class);
-        $label->update([
-            'name' => $request->get('name'),
-            'description' => $request->get('description')
-        ]);
-        flash('Метка успешно изменена')->success();
-        return redirect('/labels');
+        $label->fill($validated);
+        $label->save();
+
+        flash(__('controllers.label_update'))->success();
+        return redirect()->route('labels.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Label $label)
     {
-        $label = Label::findOrFail($id);
         $this->authorize('delete', Label::class);
         if ($label->tasks()->count() > 0) {
-            flash('Не удалось удалить метку')->error();
-            return redirect('/labels');
+            flash(__('controllers.label_statuses_destroy_failed'))->error();
+            return back();
         }
         $label->delete();
-        flash('Метка успешно удалена')->success();
-        return redirect('/labels');
+        flash(__('controllers.label_destroy'))->success();
+        return redirect()->route('labels.index');
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\TaskStatus;
 use App\Models\User;
+use Database\Factories\TaskStatusFactory;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -25,70 +26,48 @@ class TaskStatusTest extends TestCase
     {
         $response = $this
             ->actingAs($this->user)
-            ->get('/task_statuses');
-
+            ->get(route('task_statuses.index'));
         $response->assertOk();
+
         $response = $this
             ->actingAs($this->user)
-            ->get('/task_statuses/create');
-
+            ->get(route('task_statuses.create'));
         $response->assertOk();
 
-        $name = 'новая ' . time();
+        $data = TaskStatus::factory()->make()->only(['name']);
         $response = $this->actingAs($this->user)
-            ->post('/task_statuses', [
-                'name' => $name,
-            ]);
+            ->post(route('task_statuses.store'), $data);
 
-        $response->assertRedirect('/task_statuses');
-        $statusName = TaskStatus::orderByDesc('created_at')->first()->name ?? '';
-        $this->assertSame($name, $statusName);
+        $response->assertRedirect(route('task_statuses.index'));
+        $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testUpdate(): void
     {
-        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-        $name = 'новая 3 ' . time();
+        $taskStatus = TaskStatus::factory()->create();
+        $data = TaskStatus::factory()->make()->only(['name']);
         $newResponse = $this->actingAs($this->user)
-            ->patch("/task_statuses/{$statusId}", [
-                'name' => $name,
-            ]);
+            ->patch(route('task_statuses.update', $taskStatus), $data);
 
-        $newResponse->assertRedirect('/task_statuses');
-        $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
-
-        $this->assertSame($name, $newStatusName);
+        $newResponse->assertRedirect(route('task_statuses.index'));
+        $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testEdit(): void
     {
-        $name = 'новая 4 ' . time();
-        $response = $this->actingAs($this->user)
-            ->post('/task_statuses', [
-                'name' => $name,
-            ]);
-        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-        $response->assertRedirect("/task_statuses");
-
+        $taskStatus = TaskStatus::factory()->create();
         $newResponse = $this->actingAs($this->user)
-            ->get("/task_statuses/{$statusId}/edit");
+            ->get(route("task_statuses.edit", $taskStatus));
         $newResponse->assertOk();
-
-        $newStatusName = TaskStatus::all()->sortByDesc('id')->first()->name ?? '';
-        $this->assertSame($name, $newStatusName);
+        $this->assertDatabaseHas('task_statuses', $taskStatus->only(['name']));
     }
 
     public function testDestroy(): void
     {
-        $this->actingAs($this->user)
-            ->post('/task_statuses', [
-                'name' => 'новая3',
-            ]);
-        $statusId = TaskStatus::all()->sortByDesc('id')->first()->id ?? null;
-
+        $taskStatus = TaskStatus::factory()->create();
         $newResponse = $this->actingAs($this->user)
-            ->delete("/task_statuses/{$statusId}");
-        $newResponse->assertRedirect('/task_statuses');
-        $this->assertNull(TaskStatus::find($statusId));
+            ->delete(route('task_statuses.destroy', $taskStatus));
+        $newResponse->assertRedirect(route('task_statuses.index'));
+        $this->assertNull(TaskStatus::find($taskStatus->id));
     }
 }

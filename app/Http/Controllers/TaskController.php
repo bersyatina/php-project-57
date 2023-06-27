@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Label;
 use App\Models\LabelTask;
 use App\Models\Task;
@@ -34,7 +36,11 @@ class TaskController extends Controller
             'users' => User::all(),
             'tasks' => $tasks,
             'statuses' => TaskStatus::all(),
-            'user' => $request->user(),
+            'filter' => $request->get('filter') ?? [
+                'status_id' => '',
+                'assigned_to_id' => '',
+                'created_by_id' => ''
+                ]
         ]);
     }
 
@@ -56,37 +62,31 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $this->authorize('create', Task::class);
-        $request->validate(
-            [
-                'name' => ['required', 'string', 'max:255', 'unique:' . Task::class],
-                'description' => 'nullable|string',
-                'status_id' => 'required|exists:task_statuses,id',
-                'assigned_to_id' => 'nullable|exists:users,id',
-                'labels' => 'nullable|array',
-            ],
-            $messages = ['unique' => 'Задача с таким именем уже существует']
-        );
+        $this->authorize('store', Task::class);
+        $validated = $request->validated();
+        $createdById = Auth::id();
+        $data = [...$validated, 'created_by_id' => $createdById];
 
-        Task::create([
-            'name' => $request->get('name'),
-            'description' => $request->get('description'),
-            'status_id' => $request->get('status_id'),
-            'assigned_to_id' => $request->get('assigned_to_id'),
-            'created_by_id' => Auth::id(),
-        ]);
-        flash('Задача успешно создана')->success();
-        return redirect('/tasks');
+        $task = new Task();
+        $task->fill($data);
+        $task->save();
+
+        if (array_key_exists('labels', $validated)) {
+            $task->labels()->attach($validated['labels']);
+        }
+
+        $message = __('controllers.tasks_create');
+        flash($message)->success();
+        return redirect()->route('tasks.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id): View
+    public function show(Task $task): View
     {
-        $task = Task::findOrFail($id);
         $taskLabels = $task->labels()->get();
         return view('pages.task-show', [
             'task' => $task,
@@ -97,10 +97,9 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+    public function edit(Task $task): View
     {
-        $task = Task::findOrFail($id);
-        $this->authorize('update', $task);
+        $this->authorize('view', $task);
         $taskLabels = $task->labels()->select('id')->get()->toArray();
         $taskLabels = array_map(fn($item) => $item['id'], $taskLabels);
         return view('pages.task', [
@@ -115,61 +114,39 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        $request->validate(
-            [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('tasks')->ignore($id)
-                ],
-                'description' => 'nullable|string',
-                'status_id' => 'required|exists:task_statuses,id',
-                'assigned_to_id' => 'nullable|exists:users,id',
-                'labels' => 'nullable|array',
-            ],
-            $messages = ['unique' => 'Задача с таким именем уже существует']
-        );
-        $task = Task::findOrFail($id);
         $this->authorize('update', $task);
 
-        $task->update([
-            'name' => $request->get('name'),
-            'description' => $request->get('description'),
-            'status_id' => $request->get('status_id'),
-            'assigned_to_id' => $request->get('assigned_to_id'),
-        ]);
+        $validated = $request->validated();
+        $createdById = $task->created_by_id;
+        $data = [...$validated, 'created_by_id' => $createdById];
 
-        $toManyLabelsTask = LabelTask::select('label_id')->where('task_id', $task['id'])->get()->toArray();
+        $task->fill($data);
 
-        $labels = $request->get('labels');
-
-        if (is_array($labels) && count($labels) > 0) {
-            array_map(fn($label) => !in_array($label, $toManyLabelsTask, true) ? LabelTask::insert([
-                'label_id' => $label,
-                'task_id' => $task->id]) : true, $labels);
+        if (array_key_exists('labels', $validated)) {
+            $task->labels()->sync($validated['labels']);
         }
-        array_map(fn($label) => !in_array($label, $labels, true)
-            ? $task->labels()->detach($label)
-            : true, $toManyLabelsTask);
-        flash('Задача успешно изменена')->success();
-        return redirect('/tasks');
+        $task->save();
+
+        $message = __('controllers.tasks_update');
+        flash($message)->success();
+        return redirect()->route('tasks.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $task)
     {
-        $task = Task::findOrFail($id);
         $this->authorize('delete', $task);
         if (Auth::id() === $task->created_by_id) {
+            $task->labels()->detach();
             $task->delete();
-            flash('Задача успешно удалена')->success();
-            return redirect('/tasks');
+            flash(__('controllers.tasks_destroy'))->success();
+        } else {
+            flash(__('tasks_destroy_failed'))->error();
         }
-        return redirect('/tasks');
+        return redirect()->route('tasks.index');
     }
 }

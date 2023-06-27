@@ -27,7 +27,7 @@
         </div>
 
         @error('email')
-            <div class="text-rose-600">{{ $errors }}</div>
+            <div class="text-rose-600">{{ $message }}</div>
         @enderror
 
         <div class="mt-4">

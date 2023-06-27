@@ -25,85 +25,50 @@ class LabelTest extends TestCase
     {
         $response = $this
             ->actingAs($this->user)
-            ->get('/labels');
+            ->get(route('labels.index'));
 
         $response->assertOk();
         $response = $this
             ->actingAs($this->user)
-            ->get('/labels/create');
-
+            ->get(route('labels.create'));
         $response->assertOk();
-        $name = 'новая ' . time();
+
+        $data = Label::factory()->make()->only(['name', 'description']);
+
         $response = $this->actingAs($this->user)
-            ->post('/labels', [
-                'name' => $name,
-                'description' => 'описание новой метки',
-            ]);
-        $response->assertRedirect('/labels');
-        $label = Label::orderByDesc('created_at')->first();
-        if ($label !== null) {
-            $this->assertSame($name, $label->name);
-            $this->assertSame('описание новой метки', $label->description);
-        }
+            ->post(route('labels.store'), $data);
+        $response->assertRedirect(route('labels.index'));
+        $this->assertDatabaseHas('labels', $data);
     }
 
     public function testUpdate(): void
     {
-        $this->actingAs($this->user)
-            ->post('/labels', [
-                'name' => 'новая2',
-                'description' => 'Описание новаой метки 2',
-            ]);
-        $labelId = Label::all()->sortByDesc('id')->first()->id ?? null;
-        $name = 'новая 3 ' . time();
-        $newResponse = $this->actingAs($this->user)
-            ->patch("/labels/{$labelId}", [
-                'name' => $name,
-                'description' => 'Описание новаой метки 3',
-            ]);
+        $data = Label::factory()->make()->only(['name', 'description']);
+        $label = Label::factory()->create();
 
-        $newResponse->assertRedirect('/labels');
-        $newLabel = Label::all()->sortByDesc('id')->first();
-        if ($newLabel !== null) {
-            $this->assertSame($name, $newLabel->name);
-            $this->assertSame('Описание новаой метки 3', $newLabel->description);
-        }
+        $response = $this->actingAs($this->user)
+            ->patch(route('labels.update', $label), $data);
+        $response->assertRedirect(route('labels.index'));
+        $this->assertDatabaseHas('labels', $data);
     }
 
     public function testEdit(): void
     {
-        $name = 'новая 4 ' . time();
-        $response = $this->actingAs($this->user)
-            ->post('/labels', [
-                'name' => $name,
-                'description' => 'Описание новаой метки 4',
-            ]);
-        $response->assertRedirect('/labels');
-        $labelId = Label::all()->sortByDesc('id')->first()->id ?? null;
+        $label = Label::factory()->create();
 
         $newResponse = $this->actingAs($this->user)
-            ->get("/labels/{$labelId}/edit");
+            ->get(route('labels.edit', $label));
         $newResponse->assertOk();
-
-        $newLabel = Label::all()->sortByDesc('id')->first();
-        if ($newLabel !== null) {
-            $this->assertSame($name, $newLabel->name);
-            $this->assertSame('Описание новаой метки 4', $newLabel->description);
-        }
+        $this->assertDatabaseHas('labels', $label->only(['name', 'description']));
     }
 
     public function testDestroy(): void
     {
-        $response = $this->actingAs($this->user)
-            ->post('/labels', [
-                'name' => 'новая5',
-                'description' => 'Описание новаой метки 5',
-            ]);
-        $labelId = Label::all()->sortByDesc('id')->first()->id ?? null;
+        $label = Label::factory()->create();
 
         $newResponse = $this->actingAs($this->user)
-            ->delete("/labels/{$labelId}");
-        $newResponse->assertRedirect('/labels');
-        $this->assertNull(Label::find($labelId));
+            ->delete(route('labels.destroy', $label));
+        $newResponse->assertRedirect(route('labels.index'));
+        $this->assertNull(Label::find($label->id));
     }
 }

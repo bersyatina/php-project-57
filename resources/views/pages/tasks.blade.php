@@ -9,7 +9,11 @@
                         <select class="rounded border-gray-300" name="filter[status_id]">
                             <option selected="selected" value="">Статус</option>
                             @foreach($statuses as $index => $status)
-                                <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                @if($filter['status_id'] == $status->id)
+                                    <option selected value="{{ $status->id }}">{{ $status->name }}</option>
+                                @else
+                                    <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -17,7 +21,11 @@
                         <select class="ml-2 rounded border-gray-300" name="filter[created_by_id]">
                             <option selected="selected" value="">Автор</option>
                             @foreach($users as $index => $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @if($filter['created_by_id'] && $filter['created_by_id'] == $user->id)
+                                    <option selected value="{{ $user->id }}">{{ $user->name }}</option>
+                                @else
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -25,7 +33,11 @@
                         <select class="ml-2 rounded border-gray-300" name="filter[assigned_to_id]">
                             <option selected="selected" value="">Исполнитель</option>
                             @foreach($users as $index => $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @if($filter['assigned_to_id'] && $filter['assigned_to_id'] == $user->id)
+                                    <option selected value="{{ $user->id }}">{{ $user->name }}</option>
+                                @else
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>

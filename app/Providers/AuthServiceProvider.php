@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Models\Label;
 use App\Models\Task;
+use App\Models\TaskStatus;
+use App\Policies\LabelPolicy;
 use App\Policies\TaskPolicy;
+use App\Policies\TaskStatusPolicy;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -18,8 +22,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
          Task::class => TaskPolicy::class,
-         'App\Models\TaskStatus' => 'App\Policies\TaskStatusPolicy',
-         'App\Models\Label' => 'App\Policies\LabelPolicy',
+         TaskStatus::class => TaskStatusPolicy::class,
+         Label::class => LabelPolicy::class,
     ];
 
     /**

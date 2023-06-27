@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskStatusRequest;
+use App\Http\Requests\UpdateTaskStatusRequest;
 use App\Models\TaskStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,27 +39,17 @@ class TaskStatusController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): object
+    public function store(StoreTaskStatusRequest $request): object
     {
         $this->authorize('create', TaskStatus::class);
 
-        $request->validate(
-            [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    'unique:' . TaskStatus::class
-                ]
-            ],
-            $messages = ['unique' => 'Статус с таким именем уже существует']
-        );
-
-        TaskStatus::create([
-            'name' => $request->get('name')
-        ]);
-        flash('Статус успешно создан')->success();
-        return redirect('/task_statuses');
+        $validated = $request->validated();
+        $taskStatus = new TaskStatus();
+        $taskStatus->fill($validated);
+        $taskStatus->save();
+        $message = __('controllers.task_statuses_create');
+        flash($message)->success();
+        return redirect()->route('task_statuses.index');
     }
 
     /**
@@ -75,42 +67,30 @@ class TaskStatusController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskStatusRequest $request, TaskStatus $taskStatus)
     {
-        $request->validate(
-            [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('task_statuses')->ignore($id)
-                ]
-            ],
-            $messages = ['unique' => 'Статус с таким именем уже существует']
-        );
+        $this->authorize('update', TaskStatus::class);
+        $validated = $request->validated();
 
-        $status = TaskStatus::findOrFail($id);
-        $this->authorize('create', TaskStatus::class);
-        $status->update([
-            'name' => $request->get('name')
-        ]);
-        flash('Статус успешно изменён')->success();
-        return redirect('/task_statuses');
+        $taskStatus->fill($validated);
+        $taskStatus->save();
+
+        flash(__('controllers.task_statuses_update'))->success();
+        return redirect()->route('task_statuses.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse
+    public function destroy(TaskStatus $taskStatus): RedirectResponse
     {
-        $status = TaskStatus::findOrFail($id);
-        $this->authorize('delete', TaskStatus::class);
-        if ($status->tasks()->count() > 0) {
-            flash('Не удалось удалить статус')->error();
-            return redirect('/task_statuses');
+        if ($taskStatus->tasks()->exists()) {
+            flash(__('controllers.task_statuses_destroy_failed'))->error();
+            return back();
         }
-        $status->delete();
-        flash('Статус успешно удалён')->success();
-        return redirect('/task_statuses');
+        $taskStatus->delete();
+
+        flash(__('controllers.task_statuses_destroy'))->success();
+        return redirect()->route('task_statuses.index');
     }
 }
