@@ -17,9 +17,6 @@ update db:
 	touch database/database.sqlite
 	php artisan migrate
 	php artisan db:seed
-	touch database/database.sqlite
-	php artisan migrate
-	php artisan db:seed
 
 test:
 	php artisan migrate:rollback
