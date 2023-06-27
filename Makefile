@@ -6,7 +6,7 @@ install:
 	composer install
 	cp -n .env.example .env || true
 	php artisan key:gen --ansi
-	npm i -g npm@latest && npm ci
+	npm install
 	npm run build
 
 update db:
