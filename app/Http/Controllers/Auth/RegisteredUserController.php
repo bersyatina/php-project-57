@@ -37,8 +37,8 @@ class RegisteredUserController extends Controller
             'password' => 'required|confirmed|string|min:8',
             ],
             $messages = [
-                'password.min' => 'The password must be at least 8 characters long',
-                'password.confirmed' => 'Password and confirmation do not match',
+                'password.min' => 'Пароль должен иметь длину не менее 8 символов',
+                'password.confirmed' => 'Пароль и подтверждение не совпадают',
             ]
         );
 
