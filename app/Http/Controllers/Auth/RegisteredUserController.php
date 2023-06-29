@@ -32,9 +32,9 @@ class RegisteredUserController extends Controller
     {
         $request->validate(
             [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
-            'password' => 'required|confirmed|string|min:8',
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+                'password' => ['required', 'confirmed', 'string', 'min:8']
             ],
             $messages = [
                 'password.min' => 'Пароль должен иметь длину не менее 8 символов',
