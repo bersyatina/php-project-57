@@ -58,13 +58,12 @@ class TaskTest extends TestCase
             ->get(route('tasks.edit', $task));
         $newResponse->assertOk();
         $this->assertDatabaseHas('tasks', $task->only([
-                'name',
-                'description',
-                'status_id',
-                'created_by_id',
-                'assigned_to_id'
-            ])
-        );
+            'name',
+            'description',
+            'status_id',
+            'created_by_id',
+            'assigned_to_id'
+        ]));
     }
 
     public function testDestroy(): void
