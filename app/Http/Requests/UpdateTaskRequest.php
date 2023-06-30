@@ -29,7 +29,7 @@ class UpdateTaskRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tasks')->ignore($this->route('task')->id)
+                Rule::unique('tasks')->ignore($this->route('task')->id ?? null)
             ],
             'status_id' => 'required',
             'assigned_to_id' => 'nullable',
