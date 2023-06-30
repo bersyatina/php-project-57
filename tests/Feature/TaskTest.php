@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,12 +41,12 @@ class TaskTest extends TestCase
 
     public function testUpdate(): void
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create()->toArray();
         $data = Task::factory()->make()->only(['name', 'description', 'status_id', 'assigned_to_id']);
 
-        $newResponse = $this->actingAs(User::find($task->created_by_id))
+        $newResponse = $this->actingAs(User::find($task['created_by_id']))
             ->withSession(['banned' => false])
-            ->patch(route('tasks.update', $task), $data);
+            ->patch(route('tasks.update', $task['id']), $data);
 
         $newResponse->assertRedirect(route('tasks.index'));
         $this->assertDatabaseHas('tasks', $data);
@@ -53,11 +54,11 @@ class TaskTest extends TestCase
 
     public function testEdit(): void
     {
-        $task = Task::factory()->create();
-        $newResponse = $this->actingAs(User::find($task->created_by_id))
-            ->get(route('tasks.edit', $task));
+        $task = Task::factory()->create()->toArray();
+        $newResponse = $this->actingAs(User::find($task['created_by_id']))
+            ->get(route('tasks.edit', $task['id']));
         $newResponse->assertOk();
-        $this->assertDatabaseHas('tasks', $task->only([
+        $this->assertDatabaseHas('tasks', Arr::only($task, [
             'name',
             'description',
             'status_id',
@@ -68,16 +69,16 @@ class TaskTest extends TestCase
 
     public function testDestroy(): void
     {
-        $task = Task::factory()->create();
-        $newResponse = $this->actingAs(User::find($task->created_by_id))
+        $task = Task::factory()->create()->toArray();
+        $newResponse = $this->actingAs(User::find($task['created_by_id']))
             ->withSession(['banned' => false])
-            ->delete(route('tasks.destroy', $task));
+            ->delete(route('tasks.destroy', $task['id']));
 
         $newResponse->assertRedirect(route('tasks.index'));
 
         $this->assertDatabaseMissing(
             'tasks',
-            $task->only([
+            Arr::only($task, [
                 'name',
                 'description',
                 'status_id',
@@ -88,10 +89,10 @@ class TaskTest extends TestCase
 
     public function testShow(): void
     {
-        $task = Task::factory()->create();
-        $response = $this->actingAs(User::find($task->created_by_id))->get(route('tasks.show', $task));
+        $task = Task::factory()->create()->toArray();
+        $response = $this->actingAs(User::find($task['created_by_id']))->get(route('tasks.show', $task['id']));
         $content = $response->getContent();
-        $this->assertTrue(str_contains($content !== false ? $content : '', $task->description));
-        $this->assertTrue(str_contains($content !== false ? $content : '', $task->name));
+        $this->assertTrue(str_contains($content !== false ? $content : '', $task['description']));
+        $this->assertTrue(str_contains($content !== false ? $content : '', $task['name']));
     }
 }

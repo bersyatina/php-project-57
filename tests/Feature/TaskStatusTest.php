@@ -64,10 +64,10 @@ class TaskStatusTest extends TestCase
 
     public function testDestroy(): void
     {
-        $taskStatus = TaskStatus::factory()->create();
+        $taskStatus = TaskStatus::factory()->create()->toArray();
         $newResponse = $this->actingAs($this->user)
-            ->delete(route('task_statuses.destroy', $taskStatus));
+            ->delete(route('task_statuses.destroy', $taskStatus['id']));
         $newResponse->assertRedirect(route('task_statuses.index'));
-        $this->assertNull(TaskStatus::find($taskStatus->id));
+        $this->assertNull(TaskStatus::find($taskStatus['id']));
     }
 }

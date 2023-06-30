@@ -64,11 +64,10 @@ class LabelTest extends TestCase
 
     public function testDestroy(): void
     {
-        $label = Label::factory()->create();
-
+        $label = Label::factory()->create()->toArray();
         $newResponse = $this->actingAs($this->user)
-            ->delete(route('labels.destroy', $label));
+            ->delete(route('labels.destroy', $label['id']));
         $newResponse->assertRedirect(route('labels.index'));
-        $this->assertNull(Label::find($label->id));
+        $this->assertNull(Label::find($label['id']));
     }
 }
