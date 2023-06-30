@@ -69,6 +69,6 @@ class LabelTest extends TestCase
         $newResponse = $this->actingAs($this->user)
             ->delete(route('labels.destroy', $label));
         $newResponse->assertRedirect(route('labels.index'));
-        $this->assertNull(Label::findOrFail($label->id));
+        $this->assertNull(Label::find($label->id));
     }
 }

@@ -29,7 +29,8 @@ class UpdateLabelRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('labels')->ignore($this->route('label')->id ?? null)
+                Rule::unique('labels')
+                    ->ignore($this->route('label')->id ?? null)
             ],
             'description' => 'required|max:500'
         ];

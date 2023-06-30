@@ -68,6 +68,6 @@ class TaskStatusTest extends TestCase
         $newResponse = $this->actingAs($this->user)
             ->delete(route('task_statuses.destroy', $taskStatus));
         $newResponse->assertRedirect(route('task_statuses.index'));
-        $this->assertNull(TaskStatus::findOrFail($taskStatus->get('id')));
+        $this->assertNull(TaskStatus::find($taskStatus->id));
     }
 }

@@ -43,7 +43,7 @@ class TaskTest extends TestCase
         $task = Task::factory()->create();
         $data = Task::factory()->make()->only(['name', 'description', 'status_id', 'assigned_to_id']);
 
-        $newResponse = $this->actingAs(User::find($task->get('created_by_id')))
+        $newResponse = $this->actingAs(User::find($task->created_by_id))
             ->withSession(['banned' => false])
             ->patch(route('tasks.update', $task), $data);
 
@@ -54,7 +54,7 @@ class TaskTest extends TestCase
     public function testEdit(): void
     {
         $task = Task::factory()->create();
-        $newResponse = $this->actingAs(User::find($task->get('created_by_id')))
+        $newResponse = $this->actingAs(User::find($task->created_by_id))
             ->get(route('tasks.edit', $task));
         $newResponse->assertOk();
         $this->assertDatabaseHas('tasks', $task->only([
@@ -69,7 +69,7 @@ class TaskTest extends TestCase
     public function testDestroy(): void
     {
         $task = Task::factory()->create();
-        $newResponse = $this->actingAs(User::find($task->get('created_by_id')))
+        $newResponse = $this->actingAs(User::find($task->created_by_id))
             ->withSession(['banned' => false])
             ->delete(route('tasks.destroy', $task));
 
@@ -89,9 +89,9 @@ class TaskTest extends TestCase
     public function testShow(): void
     {
         $task = Task::factory()->create();
-        $response = $this->actingAs(User::find($task->get('created_by_id')))->get(route('tasks.show', $task));
+        $response = $this->actingAs(User::find($task->created_by_id))->get(route('tasks.show', $task));
         $content = $response->getContent();
-        $this->assertTrue(str_contains($content !== false ? $content : '', $task->get('description')));
-        $this->assertTrue(str_contains($content !== false ? $content : '', $task->get('name')));
+        $this->assertTrue(str_contains($content !== false ? $content : '', $task->description));
+        $this->assertTrue(str_contains($content !== false ? $content : '', $task->name));
     }
 }
